@@ -22,11 +22,9 @@ import {
   Sparkles
 } from 'lucide-vue-next'
 import { ElMessage } from 'element-plus'
-import FunctionMap from './components/FunctionMap.vue'
 import PurchaseAdvisor from './components/PurchaseAdvisor.vue'
 
 const activeCategory = ref('new AI工具')
-const showFunctionMap = ref(false)
 const showPurchaseAdvisor = ref(false)
 
 const categories = ['new AI工具', '基座系统', '智能助研', '智能助教', '智能伴学', '智能助管', '智能就业']
@@ -364,10 +362,6 @@ const handleNavigate = (link) => {
             <Sparkles :size="18" class="sparkle-icon" />
             <span>采购建议</span>
           </button>
-          <button class="function-map-trigger" @click="showFunctionMap = true">
-            <LayoutGrid :size="18" />
-            <span>功能地图</span>
-          </button>
         </div>
       </div>
       
@@ -427,15 +421,6 @@ const handleNavigate = (link) => {
       />
     </transition>
 
-    <!-- Function Map Overlay -->
-    <transition name="fade">
-      <FunctionMap 
-        v-if="showFunctionMap" 
-        :productsData="productsData" 
-        @close="showFunctionMap = false"
-        @navigate="handleNavigate"
-      />
-    </transition>
   </div>
 </template>
 
@@ -555,11 +540,10 @@ const handleNavigate = (link) => {
 /* Tabs Container */
 .tabs-container {
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
   margin-bottom: 3.5rem;
   width: 100%;
-  position: relative;
 }
 
 /* Category Tabs */
@@ -600,52 +584,34 @@ const handleNavigate = (link) => {
 }
 
 .actions-group {
-  position: absolute;
-  right: 0;
   display: flex;
   align-items: center;
   gap: 12px;
 }
 
-.function-map-trigger,
 .purchase-advisor-trigger {
   display: flex;
   align-items: center;
   gap: 8px;
-  background: #fff;
-  border: 1px solid #e2e8f0;
+  background: linear-gradient(135deg, #0f172a, #334155);
+  color: #fff;
+  border: none;
   border-radius: 98px;
   padding: 10px 20px;
   font-size: 0.95rem;
   font-weight: 600;
-  color: var(--text-primary);
   cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-}
-
-.purchase-advisor-trigger {
-  background: linear-gradient(135deg, #0f172a, #334155);
-  color: #fff;
-  border: none;
 }
 
 .purchase-advisor-trigger .sparkle-icon {
   color: #fbbf24;
 }
 
-.function-map-trigger:hover,
 .purchase-advisor-trigger:hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-}
-
-.function-map-trigger:hover {
-  border-color: var(--primary);
-  color: var(--primary);
-}
-
-.purchase-advisor-trigger:hover {
   opacity: 0.95;
 }
 
