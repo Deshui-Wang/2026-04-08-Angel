@@ -13,20 +13,105 @@ import {
   Bot,
   GraduationCap,
   MessageSquare,
+  MapPin,
+  LayoutGrid,
   Briefcase,
   Video,
   FileSearch,
-  MapPin,
-  LayoutGrid,
   ShoppingCart,
   Sparkles,
-  Lock
+  Lock,
+  Zap,
+  BarChart3,
+  Share2,
+  Map,
+  Users,
+  Target,
+  ShieldCheck,
+  TrendingUp,
+  PieChart,
+  ClipboardList,
+  Layers,
+  Rocket
 } from 'lucide-vue-next'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import PurchaseAdvisor from './components/PurchaseAdvisor.vue'
 
+const currentView = ref('portal') // 'portal' or 'strategy'
+const activeStrategyTab = ref('summary')
 const activeCategory = ref('基座系统')
 const showPurchaseAdvisor = ref(false)
+
+const strategyTabs = [
+  { id: 'summary', label: '执行摘要', icon: Zap },
+  { id: 'kg', label: '图谱构建', icon: Share2 },
+  { id: 'pricing', label: '定价模型', icon: BarChart3 },
+  { id: 'entry', label: '进校策略', icon: Target }
+]
+
+const strategyData = {
+  summary: {
+    title: '产品战略执行摘要',
+    subtitle: '面向职业院校的 AI 教学平台 ToB 落地路径',
+    keyPoints: [
+      {
+        title: '核心策略',
+        desc: '采用“敲门砖进入 → 模块化升级 → 整体方案标杆”的三步走落地方案。',
+        icon: Rocket,
+        color: '#3b82f6'
+      },
+      {
+        title: '价格锚点',
+        desc: '以 3 万元作为关键决策分界线，利用低价工具绕过冗长招标流程。',
+        icon: TrendingUp,
+        color: '#10b981'
+      },
+      {
+        title: '破冰产品',
+        desc: '重点推行“98 表自动填报工具”，直击教务处填报痛点，建立初步信任。',
+        icon: ClipboardList,
+        color: '#f59e0b'
+      }
+    ]
+  },
+  kg: {
+    title: '岗位-专业图谱构建',
+    desc: '解决“专业对口”与“能力匹配”的核心逻辑模型。',
+    layers: [
+      { name: '岗位层', content: '实时企业用人需求 (JD 结构化拆解)' },
+      { name: '专业层', content: '院校专业设置与核心课程体系' },
+      { name: '能力层', content: '具体技能标签、1+X 证书及实践经验' }
+    ],
+    phases: [
+      { name: 'Phase 1: 基础图谱', time: '1-2 个月', goal: '建立“专业-职业”静态映射矩阵 (3500+ 关联)' },
+      { name: 'Phase 2: 动态图谱', time: '3-6 个月', goal: '基于学生使用反馈，反哺能力匹配与预测模型' },
+      { name: 'Phase 3: 智能图谱', time: '6 个月+', goal: '实现就业预测、企业自动匹配与个性化成长路径' }
+    ]
+  },
+  pricing: {
+    title: '多层级产品价格体系',
+    tiers: [
+      { name: '敲门砖产品', price: '1.8 - 5 万', items: ['98 表填报工具', 'AI 教案生成器', '轻量学情分析'] },
+      { name: '场景化模块', price: '8 - 30 万', items: ['教学助手全能版', '实训管理平台', '就业指导系统'] },
+      { name: '整体解决方案', price: '50 - 200 万', items: ['专业群整体建设', '全校级 AI+ 教育中枢'] }
+    ],
+    logic: [
+      { label: '预算周期', val: '常规学年制 (9月-次年8月)' },
+      { label: '采购流程', val: '3万以下直签 / 10万以上公开招标' },
+      { label: '心智锚点', val: '对标超星/智慧树现有服务价格' }
+    ]
+  },
+  entry: {
+    title: '进校 Playbook',
+    stakeholders: [
+      { role: '教务处长', focus: '评估指标、减负', fear: '替换现有系统' },
+      { role: '信息中心', focus: '安全、SaaS', fear: '新增本地硬件' },
+      { role: '二级院长', focus: '专业建设、产教融合', fear: '通用同质化' },
+      { role: '就业中心', focus: '对口率、校企合作', fear: '单一招聘平台' }
+    ],
+    workflow: ['前期研究 (专业设置)', '初次接触 (政策红利)', '场景演示 (真实数据)', '试用跟进', '方案复盘', '商务结项']
+  }
+}
 
 // Custom Password Modal State
 const showPasswordModal = ref(false)
@@ -359,90 +444,222 @@ const handleNavigate = (item) => {
 <template>
   <div class="portal-container">
     <header class="navbar">
-      <div class="logo">
+      <div class="logo" @click="currentView = 'portal'">
         <BrainCircuit class="logo-icon" :size="32" />
         <span class="logo-text">智域 <span>AIOS</span></span>
+      </div>
+      <div class="main-nav">
+        <button 
+          class="nav-link" 
+          :class="{ active: currentView === 'portal' }"
+          @click="currentView = 'portal'"
+        >
+          产品矩阵
+        </button>
+        <button 
+          class="nav-link" 
+          :class="{ active: currentView === 'strategy' }"
+          @click="currentView = 'strategy'"
+        >
+          战略分析
+        </button>
       </div>
       <div class="nav-links">
         <el-button type="primary" plain class="login-btn">登录工作台</el-button>
       </div>
     </header>
 
-    <main class="hero-section">
-      <div class="hero-content">
-        <h1 class="glow-text">
-          科研创新与智能教育的<br/>
-          <span class="gradient-text">数字超级引擎</span>
-        </h1>
-        <p class="hero-subtext">
-          汇聚全维数据体系，打造一体化生成式工作流，解锁产学研的高效协作与深度创新。
-        </p>
-      </div>
-    </main>
+    <main v-if="currentView === 'portal'">
+      <section class="hero-section">
+        <div class="hero-content">
+          <h1 class="glow-text">
+            科研创新与智能教育的<br/>
+            <span class="gradient-text">数字超级引擎</span>
+          </h1>
+          <p class="hero-subtext">
+            汇聚全维数据体系，打造一体化生成式工作流，解锁产学研的高效协作与深度创新。
+          </p>
+        </div>
+      </section>
 
-    <section class="products-section">
-      <div class="tabs-container">
-        <div class="category-tabs">
-          <button 
-            v-for="cat in categories" 
-            :key="cat"
-            class="tab-btn"
-            :class="{ active: activeCategory === cat }"
-            @click="activeCategory = cat"
+      <section class="products-section">
+        <div class="tabs-container">
+          <div class="category-tabs">
+            <button 
+              v-for="cat in categories" 
+              :key="cat"
+              class="tab-btn"
+              :class="{ active: activeCategory === cat }"
+              @click="activeCategory = cat"
+            >
+              {{ cat }}
+            </button>
+          </div>
+          <div class="actions-group">
+            <button class="purchase-advisor-trigger" @click="showPurchaseAdvisor = true">
+              <Sparkles :size="18" class="sparkle-icon" />
+              <span>采购建议</span>
+            </button>
+          </div>
+        </div>
+        
+        <div class="products-list">
+          <div 
+            v-for="item in productsData[activeCategory]" 
+            :key="item.id"
+            class="product-card"
+            @mouseenter="activeId = item.id"
+            @mouseleave="activeId = null"
+            @click="handleNavigate(item)"
           >
-            {{ cat }}
-          </button>
-        </div>
-        <div class="actions-group">
-          <button class="purchase-advisor-trigger" @click="showPurchaseAdvisor = true">
-            <Sparkles :size="18" class="sparkle-icon" />
-            <span>采购建议</span>
-          </button>
-        </div>
-      </div>
-      
-      <div class="products-list">
-        <div 
-          v-for="item in productsData[activeCategory]" 
-          :key="item.id"
-          class="product-card"
-          @mouseenter="activeId = item.id"
-          @mouseleave="activeId = null"
-          @click="handleNavigate(item)"
-        >
-          <div class="card-glow" :style="{ background: `radial-gradient(circle at right, ${item.color}33, transparent 70%)`, opacity: activeId === item.id ? 1 : 0 }"></div>
-          
-          <div class="card-content">
-            <div class="icon-wrapper" :style="{ backgroundColor: `${item.color}1A`, color: item.color }">
-              <img v-if="item.iconUrl" :src="item.iconUrl" :alt="item.title" class="custom-icon" />
-              <component v-else :is="item.icon" :size="32" />
-            </div>
+            <div class="card-glow" :style="{ background: `radial-gradient(circle at right, ${item.color}33, transparent 70%)`, opacity: activeId === item.id ? 1 : 0 }"></div>
             
-            <div class="product-info">
-              <h3 class="product-title">{{ item.title }}</h3>
-              <p class="product-desc">{{ item.description }}</p>
-            </div>
+            <div class="card-content">
+              <div class="icon-wrapper" :style="{ backgroundColor: `${item.color}1A`, color: item.color }">
+                <img v-if="item.iconUrl" :src="item.iconUrl" :alt="item.title" class="custom-icon" />
+                <component v-else :is="item.icon" :size="32" />
+              </div>
+              
+              <div class="product-info">
+                <h3 class="product-title">{{ item.title }}</h3>
+                <p class="product-desc">{{ item.description }}</p>
+              </div>
 
-            <div class="product-meta">
-              <span class="meta-tag" :style="{ backgroundColor: item.color }">
-                <span class="dot"></span>
-                {{ item.stats }}
-              </span>
-              <el-button 
-                round 
-                class="enter-btn"
-                :class="{ 'is-active': activeId === item.id }"
-                :style="activeId === item.id ? { backgroundColor: item.color, borderColor: item.color, color: '#fff' } : {}"
-                @click.stop="handleNavigate(item)"
-              >
-                进入产品
-                <ArrowRight class="btn-icon" :size="16" />
-              </el-button>
+              <div class="product-meta">
+                <span class="meta-tag" :style="{ backgroundColor: item.color }">
+                  <span class="dot"></span>
+                  {{ item.stats }}
+                </span>
+                <el-button 
+                  round 
+                  class="enter-btn"
+                  :class="{ 'is-active': activeId === item.id }"
+                  :style="activeId === item.id ? { backgroundColor: item.color, borderColor: item.color, color: '#fff' } : {}"
+                  @click.stop="handleNavigate(item)"
+                >
+                  进入产品
+                  <ArrowRight class="btn-icon" :size="16" />
+                </el-button>
+              </div>
             </div>
           </div>
         </div>
+      </section>
+    </main>
+
+    <!-- Strategic Analysis View -->
+    <main v-else-if="currentView === 'strategy'" class="strategy-section">
+      <div class="strategy-container">
+        <aside class="strategy-sidebar">
+          <div class="sidebar-header">
+            <ClipboardList :size="24" />
+            <span>战略看板</span>
+          </div>
+          <nav class="strategy-nav">
+            <button 
+              v-for="tab in strategyTabs" 
+              :key="tab.id"
+              class="strategy-tab-btn"
+              :class="{ active: activeStrategyTab === tab.id }"
+              @click="activeStrategyTab = tab.id"
+            >
+              <component :is="tab.icon" :size="18" />
+              {{ tab.label }}
+            </button>
+          </nav>
+        </aside>
+
+        <section class="strategy-content">
+          <!-- Summary Tab -->
+          <div v-if="activeStrategyTab === 'summary'" class="tab-pane">
+            <div class="pane-header">
+              <h2 class="pane-title">{{ strategyData.summary.title }}</h2>
+              <p class="pane-subtitle">{{ strategyData.summary.subtitle }}</p>
+            </div>
+            <div class="summary-grid">
+              <div v-for="point in strategyData.summary.keyPoints" :key="point.title" class="summary-card">
+                <div class="point-icon" :style="{ color: point.color, backgroundColor: `${point.color}15` }">
+                  <component :is="point.icon" :size="24" />
+                </div>
+                <h4>{{ point.title }}</h4>
+                <p>{{ point.desc }}</p>
+              </div>
+            </div>
+            <div class="strategy-highlight-box">
+              <p>核心结论：采用<strong>“敲门砖产品进校 → 模块化升级 → 整体解决方案做标杆”</strong>的三步走策略，建立信任后再逐步转化为高价值模块。</p>
+            </div>
+          </div>
+
+          <!-- Knowledge Graph Tab -->
+          <div v-else-if="activeStrategyTab === 'kg'" class="tab-pane">
+            <div class="pane-header">
+              <h2 class="pane-title">{{ strategyData.kg.title }}</h2>
+              <p class="pane-subtitle">{{ strategyData.kg.desc }}</p>
+            </div>
+            <div class="kg-mapping">
+              <div v-for="(layer, idx) in strategyData.kg.layers" :key="layer.name" class="kg-layer-item">
+                <div class="layer-badge">L{{ idx + 1 }}</div>
+                <div class="layer-info">
+                  <strong>{{ layer.name }}</strong>
+                  <span>{{ layer.content }}</span>
+                </div>
+              </div>
+            </div>
+            <div class="phases-timeline">
+              <div v-for="phase in strategyData.kg.phases" :key="phase.name" class="phase-node">
+                <div class="phase-meta">
+                  <span class="phase-name">{{ phase.name }}</span>
+                  <span class="phase-time">{{ phase.time }}</span>
+                </div>
+                <div class="phase-goal">{{ phase.goal }}</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pricing Tab -->
+          <div v-else-if="activeStrategyTab === 'pricing'" class="tab-pane">
+            <div class="pane-header">
+              <h2 class="pane-title">{{ strategyData.pricing.title }}</h2>
+            </div>
+            <div class="pricing-tiers">
+              <div v-for="tier in strategyData.pricing.tiers" :key="tier.name" class="tier-card">
+                <div class="tier-name">{{ tier.name }}</div>
+                <div class="tier-price">{{ tier.price }}</div>
+                <ul class="tier-items">
+                  <li v-for="item in tier.items" :key="item"><Check :size="14" /> {{ item }}</li>
+                </ul>
+              </div>
+            </div>
+            <div class="pricing-logic">
+              <div v-for="item in strategyData.pricing.logic" :key="item.label" class="logic-row">
+                <span class="logic-label">{{ item.label }}</span>
+                <span class="logic-val">{{ item.val }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Entry Tab -->
+          <div v-else-if="activeStrategyTab === 'entry'" class="tab-pane">
+            <div class="pane-header">
+              <h2 class="pane-title">{{ strategyData.entry.title }}</h2>
+            </div>
+            <div class="stakeholders-list">
+              <div v-for="s in strategyData.entry.stakeholders" :key="s.role" class="stakeholder-card">
+                <h5>{{ s.role }}</h5>
+                <div class="s-detail"><strong>关注点:</strong> {{ s.focus }}</div>
+                <div class="s-detail"><strong>最怕:</strong> {{ s.fear }}</div>
+              </div>
+            </div>
+            <div class="workflow-steps">
+              <div v-for="(step, idx) in strategyData.entry.workflow" :key="step" class="workflow-node">
+                <div class="node-idx">{{ idx + 1 }}</div>
+                <div class="node-text">{{ step }}</div>
+              </div>
+            </div>
+          </div>
+        </section>
       </div>
-    </section>
+    </main>
 
     <!-- Background decoration -->
     <div class="bg-grid"></div>
@@ -1031,5 +1248,424 @@ const handleNavigate = (item) => {
 @keyframes modalIn {
   0% { opacity: 0; transform: translateY(20px) scale(0.9); }
   100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+/* Main Navigation */
+.main-nav {
+  display: flex;
+  gap: 2rem;
+  margin: 0 2rem;
+}
+
+.nav-link {
+  background: transparent;
+  border: none;
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 0.5rem 0;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.nav-link:hover {
+  color: var(--text-primary);
+}
+
+.nav-link.active {
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+.nav-link.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: var(--text-primary);
+  border-radius: 2px;
+}
+
+/* Strategic Analysis Section */
+.strategy-section {
+  margin-top: 100px;
+  padding: 2rem;
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.strategy-container {
+  max-width: 1200px;
+  width: 100%;
+  display: flex;
+  gap: 3rem;
+  min-height: 70vh;
+}
+
+.strategy-sidebar {
+  width: 240px;
+  flex-shrink: 0;
+}
+
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 2rem;
+  color: var(--text-primary);
+  font-weight: 700;
+  font-size: 1.2rem;
+}
+
+.strategy-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.strategy-tab-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+  border: none;
+  background: transparent;
+  border-radius: 12px;
+  color: var(--text-secondary);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 100%;
+  text-align: left;
+}
+
+.strategy-tab-btn:hover {
+  background: rgba(0, 0, 0, 0.03);
+  color: var(--text-primary);
+}
+
+.strategy-tab-btn.active {
+  background: var(--text-primary);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.strategy-content {
+  flex: 1;
+  background: var(--bg-surface);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  border-radius: 32px;
+  padding: 3rem;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.02);
+}
+
+.pane-header {
+  margin-bottom: 3rem;
+}
+
+.pane-title {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.pane-subtitle {
+  font-size: 1.1rem;
+  color: var(--text-secondary);
+}
+
+/* Summary Grid */
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+}
+
+.summary-card {
+  padding: 2rem;
+  background: #f8fafc;
+  border-radius: 24px;
+  text-align: left;
+  transition: transform 0.3s ease;
+}
+
+.summary-card:hover {
+  transform: translateY(-5px);
+}
+
+.point-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
+.summary-card h4 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: var(--text-primary);
+}
+
+.summary-card p {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.strategy-highlight-box {
+  background: linear-gradient(135deg, #0f172a, #334155);
+  color: #fff;
+  padding: 2rem;
+  border-radius: 24px;
+  line-height: 1.6;
+}
+
+.strategy-highlight-box strong {
+  color: #fbbf24;
+}
+
+/* Knowledge Graph Mapping */
+.kg-mapping {
+  margin-bottom: 3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.kg-layer-item {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  background: #f1f5f9;
+  border-radius: 16px;
+}
+
+.layer-badge {
+  background: var(--text-primary);
+  color: #fff;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+}
+
+.layer-info strong {
+  display: block;
+  font-size: 1.1rem;
+  color: var(--text-primary);
+}
+
+/* Timeline */
+.phases-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  padding-left: 1rem;
+  border-left: 2px dashed #e2e8f0;
+}
+
+.phase-node {
+  position: relative;
+  padding-left: 2rem;
+}
+
+.phase-node::before {
+  content: '';
+  position: absolute;
+  left: -9px;
+  top: 0;
+  width: 16px;
+  height: 16px;
+  background: #fff;
+  border: 4px solid var(--text-primary);
+  border-radius: 50%;
+}
+
+.phase-meta {
+  margin-bottom: 0.5rem;
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.phase-name {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.phase-time {
+  font-size: 0.85rem;
+  background: #f1f5f9;
+  padding: 2px 8px;
+  border-radius: 6px;
+  color: #64748b;
+}
+
+/* Pricing Section */
+.pricing-tiers {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+}
+
+.tier-card {
+  padding: 2rem;
+  border-radius: 24px;
+  border: 1px solid #e2e8f0;
+  transition: all 0.3s ease;
+}
+
+.tier-card:hover {
+  border-color: var(--text-primary);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+}
+
+.tier-name {
+  font-weight: 700;
+  color: #64748b;
+  margin-bottom: 0.8rem;
+}
+
+.tier-price {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 1.5rem;
+}
+
+.tier-items {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.tier-items li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.pricing-logic {
+  background: #f8fafc;
+  padding: 1.5rem;
+  border-radius: 16px;
+}
+
+.logic-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.8rem 0;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.logic-row:last-child {
+  border-bottom: none;
+}
+
+.logic-label {
+  color: #64748b;
+  font-weight: 500;
+}
+
+.logic-val {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+/* Entry Section */
+.stakeholders-list {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin-bottom: 3rem;
+}
+
+.stakeholder-card {
+  padding: 1.5rem;
+  background: #fff;
+  border: 1px solid #f1f5f9;
+  border-radius: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+}
+
+.stakeholder-card h5 {
+  font-size: 1.1rem;
+  margin-bottom: 0.8rem;
+  color: var(--text-primary);
+}
+
+.s-detail {
+  font-size: 0.9rem;
+  margin-bottom: 0.4rem;
+}
+
+.workflow-steps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.workflow-node {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #fff;
+  padding: 10px 16px;
+  border-radius: 98px;
+  border: 1px solid #e2e8f0;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.node-idx {
+  background: var(--text-primary);
+  color: #fff;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+}
+
+@media (max-width: 992px) {
+  .strategy-container {
+    flex-direction: column;
+    gap: 2rem;
+  }
+  .strategy-sidebar {
+    width: 100%;
+  }
+  .strategy-nav {
+    flex-direction: row;
+    overflow-x: auto;
+    padding-bottom: 1rem;
+  }
+  .strategy-tab-btn {
+    white-space: nowrap;
+    width: auto;
+  }
+  .summary-grid, .pricing-tiers {
+    grid-template-columns: 1fr;
+  }
 }
 </style>
