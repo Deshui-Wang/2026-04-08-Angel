@@ -546,6 +546,16 @@ const dreamIdeas = ref([
   }
 ])
 
+const activeLabIdea = ref(null)
+
+const openLabIdea = (idea) => {
+  activeLabIdea.value = idea
+}
+
+const closeLabIdea = () => {
+  activeLabIdea.value = null
+}
+
 const switchScenario = (idea, key) => {
   idea.activeScenario = key
   idea.shakeActive = true
@@ -913,13 +923,16 @@ const submitSparkIdea = () => {
             v-for="idea in dreamIdeas" 
             :key="idea.id" 
             class="idea-card"
-            :class="{ 'is-popy-card': idea.isPopy, 'is-open': idea.isOpen }"
+            :class="{ 'is-popy-card': idea.isPopy }"
             :style="{ '--idea-color': idea.color }"
+            @click="openLabIdea(idea)"
           >
+            <div class="idea-card-glow" :style="{ background: `radial-gradient(circle at top right, ${idea.color}15, transparent 60%)` }"></div>
+
             <!-- 头部：图标与状态呼吸灯 -->
             <div class="idea-card-header">
               <div class="idea-icon-wrapper" :style="{ backgroundColor: `${idea.color}15`, color: idea.color }">
-                <component :is="idea.icon" :size="24" />
+                <component :is="idea.icon" :size="26" />
               </div>
               <div class="status-badge" :style="{ color: idea.color, borderColor: `${idea.color}30`, backgroundColor: `${idea.color}08` }">
                 <span class="status-dot pulsing" :style="{ backgroundColor: idea.color, boxShadow: `0 0 8px ${idea.color}` }"></span>
@@ -931,216 +944,22 @@ const submitSparkIdea = () => {
             <div class="idea-card-body">
               <h3 class="idea-title">{{ idea.title }}</h3>
               <p class="idea-subtitle">{{ idea.subtitle }}</p>
-            </div>
-
-            <!-- 可折叠/展开的深度细节面板触发器 -->
-            <div class="idea-accordion-trigger" @click="idea.isOpen = !idea.isOpen">
-              <span>{{ idea.isOpen ? '收起设想细节' : '展开多维设想细节' }}</span>
-              <component :is="idea.isOpen ? ChevronLeft : ArrowRight" class="arrow-icon" :size="16" :style="{ transform: `rotate(${idea.isOpen ? '90deg' : '0'})`, transition: 'all 0.3s' }" />
-            </div>
-
-            <!-- 展开的细节区 -->
-            <div v-show="idea.isOpen" class="idea-accordion-content">
               
-              <!-- 情况 A：普通创意折叠面板（EduChain, VRLab, UniMeet） -->
-              <div v-if="!idea.isPopy" class="regular-idea-details">
-                <div class="detail-block">
-                  <span class="detail-label">🚨 痛点分析:</span>
-                  <p class="detail-text">{{ idea.painpoint }}</p>
-                </div>
-                <div class="detail-block">
-                  <span class="detail-label">💡 核心方案:</span>
-                  <p class="detail-text">{{ idea.solution }}</p>
-                </div>
-                <div class="detail-block">
-                  <span class="detail-label">💎 商业估值:</span>
-                  <p class="detail-text">{{ idea.business }}</p>
-                </div>
-                <div class="detail-block">
-                  <span class="detail-label">🛠️ 核心技术:</span>
-                  <p class="detail-text">{{ idea.tech }}</p>
-                </div>
-              </div>
+              <!-- 轻量痛点简述，突出亮点 -->
+              <p class="idea-brief-pain">
+                {{ idea.isPopy ? '宠物情绪与行为意图多模态解码。端侧多模态架构结合骨传导声学与六轴 IMU 姿态流动态拼接推理，实现毫秒级宠物意图精准破译。' : idea.painpoint }}
+              </p>
+            </div>
 
-              <!-- 情况 B：旗舰级可交互 PoC 沙盒实验室（PoPyWaWa） -->
-              <div v-else class="popy-sandbox-lab">
-                <div class="sandbox-divider"><span>PoC 端侧多模态 AI 概念实验室</span></div>
-                
-                <div class="sandbox-grid">
-                  <!-- 1. 左栏：2D矢量宠物项圈拆解图 -->
-                  <div class="sandbox-column collar-column">
-                    <div class="column-header">🔍 项圈几何结构分析</div>
-                    <div class="collar-visual-box">
-                      <!-- 高级 SVG 渲染智能项圈与纽扣 -->
-                      <svg class="collar-svg" viewBox="0 0 200 200">
-                        <circle cx="100" cy="100" r="70" fill="none" stroke="rgba(56, 161, 105, 0.15)" stroke-width="12" />
-                        <circle cx="100" cy="100" r="70" fill="none" stroke="url(#collar-grad)" stroke-width="8" stroke-dasharray="440" stroke-dashoffset="80" />
-                        <!-- 骨传导挂饰悬坠 -->
-                        <g class="pendant-g">
-                          <line x1="100" y1="170" x2="100" y2="185" stroke="#38a169" stroke-width="3" />
-                          <circle cx="100" cy="185" r="12" fill="#0f172a" stroke="#38a169" stroke-width="2" />
-                          <circle cx="100" cy="185" r="4" fill="#58d68d" class="pendant-pulse" />
-                        </g>
-                        <!-- 后脑高位感知片 -->
-                        <g class="sensor-g">
-                          <rect x="85" y="22" width="30" height="12" rx="4" fill="#0f172a" stroke="#38a169" stroke-width="2" />
-                          <circle cx="100" cy="28" r="3" fill="#e74c3c" class="sensor-pulse" />
-                        </g>
-                        <!-- 渐变渲染定义 -->
-                        <defs>
-                          <linearGradient id="collar-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" stop-color="#38a169" />
-                            <stop offset="100%" stop-color="#1a365d" />
-                          </linearGradient>
-                        </defs>
-                      </svg>
-
-                      <!-- 交互脉冲锚点 A：下巴低位项坠 -->
-                      <div class="collar-anchor anchor-chin tooltip-trigger">
-                        <span class="anchor-dot"></span>
-                        <div class="tooltip-bubble">
-                          <strong>⚓ 下巴低位挂坠（纽扣核心）：</strong>
-                          <p>重力锚点平衡项圈（配重质量 > 65%），内置骨传导声学拾音器与110°前向同视角超微摄像头。</p>
-                        </div>
-                      </div>
-
-                      <!-- 交互脉冲锚点 B：后脑高位感知片 -->
-                      <div class="collar-anchor anchor-atlas tooltip-trigger">
-                        <span class="anchor-dot"></span>
-                        <div class="tooltip-bubble">
-                          <strong>🧠 后脑高位感知柔性片：</strong>
-                          <p>极轻量级寰椎关节阻尼片（质量占比 < 15%），内置高频六轴 IMU，深度捕捉头部偏侧、颤抖与细微点头幅率。</p>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="collar-caption">💡 鼠标Hover圆环上的绿色脉冲点可查阅专业构造</div>
-                  </div>
-
-                  <!-- 2. 中栏：端侧推理控制台 (波形图 & 融合公式) -->
-                  <div class="sandbox-column control-column">
-                    <div class="column-header">🎛️ 实验室端侧推理控制台</div>
-                    
-                    <!-- 场景切换 Tab -->
-                    <div class="scenario-selector">
-                      <button 
-                        v-for="(scene, key) in idea.scenarios" 
-                        :key="key"
-                        class="scenario-tab"
-                        :class="{ active: idea.activeScenario === key }"
-                        @click="switchScenario(idea, key)"
-                      >
-                        {{ scene.name }}
-                      </button>
-                    </div>
-
-                    <!-- 输入端实时模拟数据流 -->
-                    <div class="data-streams">
-                      <div class="stream-item">
-                        <div class="stream-label">🎙️ 声学特征波谱 (Audio Wave)</div>
-                        <div class="wave-box">
-                          <!-- 10个动态起伏声波条 -->
-                          <div 
-                            v-for="i in 10" 
-                            :key="i" 
-                            class="audio-bar"
-                            :style="{ 
-                              animationDuration: idea.scenarios[idea.activeScenario].audioFreq,
-                              animationDelay: `${i * 0.05}s`
-                            }"
-                          ></div>
-                        </div>
-                      </div>
-
-                      <div class="stream-item">
-                        <div class="stream-label">🧭 六轴动作惯性流 (IMU Flux)</div>
-                        <div class="imu-box">
-                          <svg class="imu-svg" viewBox="0 0 100 20">
-                            <!-- 模拟三轴运动波形折线图 -->
-                            <path d="M 0 10 Q 15 2, 30 14 T 60 8 T 90 12 L 100 10" fill="none" stroke="#38a169" stroke-width="1.5" class="imu-path" />
-                            <path d="M 0 8 Q 20 18, 40 4 T 80 16 L 100 8" fill="none" stroke="#3b82f6" stroke-width="1" class="imu-path-blue" />
-                          </svg>
-                        </div>
-                      </div>
-                    </div>
-
-                    <!-- AI 特征矩阵拼接公式 -->
-                    <div class="fusion-formula-box">
-                      <div class="formula-title">🧮 特征向量矩阵融合 (Feature Fusion)</div>
-                      <div class="formula-latex">
-                        M<sub>fusion</sub> = [ V<sub>audio</sub>, V<sub>motion</sub>, V<sub>context</sub> ]
-                      </div>
-                      <!-- 模型反馈飞出的绿色微粒 -->
-                      <div 
-                        v-for="p in idea.particles" 
-                        :key="p.id"
-                        class="gradient-particle"
-                        :style="{ 
-                          left: `calc(50% + ${p.x}px)`,
-                          bottom: `calc(20px + ${p.y}px)`,
-                          animationDelay: `${p.delay}s` 
-                        }"
-                      ></div>
-                    </div>
-                  </div>
-
-                  <!-- 3. 右栏：智能手机终端模拟 -->
-                  <div class="sandbox-column phone-column">
-                    <div class="column-header">📱 智域 App 移动监视端</div>
-                    
-                    <!-- 手机拟真框体 -->
-                    <div class="phone-frame" :class="{ 'vibrate-shake': idea.shakeActive }">
-                      <div class="phone-notch"></div>
-                      
-                      <div class="phone-screen">
-                        <!-- 手机状态栏 -->
-                        <div class="screen-status-bar">
-                          <span>11:45</span>
-                          <span>📶 🔋</span>
-                        </div>
-
-                        <!-- 推理判定强震动弹窗 -->
-                        <div class="screen-alert-card">
-                          <div class="alert-header">
-                            <span class="alert-dot"></span>
-                            {{ idea.scenarios[idea.activeScenario].appTitle }}
-                          </div>
-                          <div class="alert-body">
-                            {{ idea.scenarios[idea.activeScenario].appDesc }}
-                          </div>
-                        </div>
-
-                        <!-- 第一人称日记卡片 -->
-                        <div class="screen-diary-card">
-                          <div class="diary-header">
-                            🐕 萌宠心情第一人称日记
-                          </div>
-                          <!-- 包含随着场景动态变化的日记 -->
-                          <div class="diary-body">
-                            <p class="diary-text">{{ idea.scenarios[idea.activeScenario].diary }}</p>
-                          </div>
-                        </div>
-
-                        <!-- 增量模型反馈闭环 -->
-                        <div class="screen-feedback-loop">
-                          <div class="feedback-hint">对本次情绪判定进行小样本反馈:</div>
-                          <div class="feedback-actions">
-                            <button class="fb-btn correct" @click="triggerFineTuning(idea)">
-                              ✔️ 翻译准确
-                            </button>
-                            <button class="fb-btn incorrect" @click="triggerFineTuning(idea)">
-                              ❌ 是在撒娇
-                            </button>
-                          </div>
-                        </div>
-
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
+            <!-- 卡片尾部微光引导按钮 -->
+            <div class="idea-card-footer">
+              <span class="enter-lab-link" :style="{ color: idea.color }">
+                查看概念验证实验室
+                <ArrowRight :size="14" />
+              </span>
             </div>
           </div>
+
         </div>
       </section>
 
@@ -1175,6 +994,238 @@ const submitSparkIdea = () => {
           </div>
         </div>
       </section>
+
+      <!-- 旗舰级/常规创意实验室全屏毛玻璃弹窗 -->
+      <transition name="modal-fade">
+        <div v-if="activeLabIdea" class="lab-modal-overlay" @click.self="closeLabIdea">
+          <div class="lab-modal-content" :style="{ '--lab-color': activeLabIdea.color }" :class="{ 'is-popy-lab': activeLabIdea.isPopy }">
+            
+            <!-- 关闭按钮 -->
+            <button class="lab-modal-close" @click="closeLabIdea">×</button>
+
+            <!-- 弹窗头部 -->
+            <div class="lab-modal-header">
+              <div class="lab-header-icon" :style="{ backgroundColor: `${activeLabIdea.color}15`, color: activeLabIdea.color }">
+                <component :is="activeLabIdea.icon" :size="32" />
+              </div>
+              <div class="lab-header-text-group">
+                <h2 class="lab-header-title">{{ activeLabIdea.title }}</h2>
+                <p class="lab-header-subtitle">{{ activeLabIdea.subtitle }}</p>
+              </div>
+              <div class="lab-header-status" :style="{ color: activeLabIdea.color, borderColor: `${activeLabIdea.color}30`, backgroundColor: `${activeLabIdea.color}08` }">
+                <span class="status-dot pulsing" :style="{ backgroundColor: activeLabIdea.color, boxShadow: `0 0 8px ${activeLabIdea.color}` }"></span>
+                {{ activeLabIdea.statusText }}
+              </div>
+            </div>
+
+            <!-- 弹窗主体区 -->
+            <div class="lab-modal-body">
+              
+              <!-- 情况 A：普通创意实验室详情（EduChain, VRLab, UniMeet） -->
+              <div v-if="!activeLabIdea.isPopy" class="regular-lab-details">
+                <div class="lab-detail-card">
+                  <div class="lab-card-icon">🚨</div>
+                  <div class="lab-card-title">痛点分析</div>
+                  <div class="lab-card-text">{{ activeLabIdea.painpoint }}</div>
+                </div>
+                <div class="lab-detail-card">
+                  <div class="lab-card-icon">💡</div>
+                  <div class="lab-card-title">核心创新方案</div>
+                  <div class="lab-card-text">{{ activeLabIdea.solution }}</div>
+                </div>
+                <div class="lab-detail-card">
+                  <div class="lab-card-icon">💎</div>
+                  <div class="lab-card-title">商业估值</div>
+                  <div class="lab-card-text">{{ activeLabIdea.business }}</div>
+                </div>
+                <div class="lab-detail-card">
+                  <div class="lab-card-icon">🛠️</div>
+                  <div class="lab-card-title">核心技术架构</div>
+                  <div class="lab-card-text">{{ activeLabIdea.tech }}</div>
+                </div>
+              </div>
+
+              <!-- 情况 B：旗舰级可交互 PoC 沙盒实验室（PoPyWaWa） -->
+              <div v-else class="popy-sandbox-lab">
+                <div class="sandbox-divider"><span>PoC 端侧多模态 AI 概念实验室</span></div>
+                
+                <div class="sandbox-grid">
+                  <!-- 1. 左栏：2D矢量宠物项圈拆解图 -->
+                  <div class="sandbox-column collar-column">
+                    <div class="column-header">🔍 项圈几何结构分析</div>
+                    <div class="collar-visual-box">
+                      <!-- 高级 SVG 渲染智能项圈与纽扣 -->
+                      <svg class="collar-svg" viewBox="0 0 200 200">
+                        <circle cx="100" cy="100" r="70" fill="none" stroke="rgba(56, 161, 105, 0.15)" stroke-width="12" />
+                        <circle cx="100" cy="100" r="70" fill="none" stroke="url(#collar-grad-modal)" stroke-width="8" stroke-dasharray="440" stroke-dashoffset="80" />
+                        <!-- 骨传导挂饰悬坠 -->
+                        <g class="pendant-g">
+                          <line x1="100" y1="170" x2="100" y2="185" stroke="#38a169" stroke-width="3" />
+                          <circle cx="100" cy="185" r="12" fill="#0f172a" stroke="#38a169" stroke-width="2" />
+                          <circle cx="100" cy="185" r="4" fill="#58d68d" class="pendant-pulse" />
+                        </g>
+                        <!-- 后脑高位感知片 -->
+                        <g class="sensor-g">
+                          <rect x="85" y="22" width="30" height="12" rx="4" fill="#0f172a" stroke="#38a169" stroke-width="2" />
+                          <circle cx="100" cy="28" r="3" fill="#e74c3c" class="sensor-pulse" />
+                        </g>
+                        <!-- 渐变渲染定义 -->
+                        <defs>
+                          <linearGradient id="collar-grad-modal" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#38a169" />
+                            <stop offset="100%" stop-color="#1a365d" />
+                          </linearGradient>
+                        </defs>
+                      </svg>
+
+                      <!-- 交互脉冲锚点 A：下巴低位项坠 -->
+                      <div class="collar-anchor anchor-chin tooltip-trigger">
+                        <span class="anchor-dot"></span>
+                        <div class="tooltip-bubble">
+                          <strong>⚓ 下巴低位挂坠（纽扣核心）：</strong>
+                          <p>重力锚点平衡项圈（配重质量 > 65%），内置骨传导声学拾音器与110°前向同视角超微摄像头。</p>
+                        </div>
+                      </div>
+
+                      <!-- 交互脉冲锚点 B：后脑高位感知片 -->
+                      <div class="collar-anchor anchor-atlas tooltip-trigger">
+                        <span class="anchor-dot"></span>
+                        <div class="tooltip-bubble">
+                          <strong>🧠 后脑高位感知柔性片：</strong>
+                          <p>极轻量级寰椎关节阻尼片（质量占比 < 15%），内置高频六轴 IMU，深度捕捉头部偏侧、颤抖与细微点头幅率。</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="collar-caption">💡 鼠标Hover圆环上的绿色脉冲点可查阅专业构造</div>
+                  </div>
+
+                  <!-- 2. 中栏：端侧推理控制台 (波形图 & 融合公式) -->
+                  <div class="sandbox-column control-column">
+                    <div class="column-header">🎛️ 实验室端侧推理控制台</div>
+                    
+                    <!-- 场景切换 Tab -->
+                    <div class="scenario-selector">
+                      <button 
+                        v-for="(scene, key) in activeLabIdea.scenarios" 
+                        :key="key"
+                        class="scenario-tab"
+                        :class="{ active: activeLabIdea.activeScenario === key }"
+                        @click="switchScenario(activeLabIdea, key)"
+                      >
+                        {{ scene.name }}
+                      </button>
+                    </div>
+
+                    <!-- 输入端实时模拟数据流 -->
+                    <div class="data-streams">
+                      <div class="stream-item">
+                        <div class="stream-label">🎙️ 声学特征波谱 (Audio Wave)</div>
+                        <div class="wave-box">
+                          <!-- 10个动态起伏声波条 -->
+                          <div 
+                            v-for="i in 10" 
+                            :key="i" 
+                            class="audio-bar"
+                            :style="{ 
+                              animationDuration: activeLabIdea.scenarios[activeLabIdea.activeScenario].audioFreq,
+                              animationDelay: `${i * 0.05}s`
+                            }"
+                          ></div>
+                        </div>
+                      </div>
+
+                      <div class="stream-item">
+                        <div class="stream-label">🧭 六轴动作惯性流 (IMU Flux)</div>
+                        <div class="imu-box">
+                          <svg class="imu-svg" viewBox="0 0 100 20">
+                            <!-- 模拟三轴运动波形折线图 -->
+                            <path d="M 0 10 Q 15 2, 30 14 T 60 8 T 90 12 L 100 10" fill="none" stroke="#38a169" stroke-width="1.5" class="imu-path" />
+                            <path d="M 0 8 Q 20 18, 40 4 T 80 16 L 100 8" fill="none" stroke="#3b82f6" stroke-width="1" class="imu-path-blue" />
+                          </svg>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- AI 特征矩阵拼接公式 -->
+                    <div class="fusion-formula-box">
+                      <div class="formula-title">🧮 特征向量矩阵融合 (Feature Fusion)</div>
+                      <div class="formula-latex">
+                        M<sub>fusion</sub> = [ V<sub>audio</sub>, V<sub>motion</sub>, V<sub>context</sub> ]
+                      </div>
+                      <!-- 模型反馈飞出的绿色微粒 -->
+                      <div 
+                        v-for="p in activeLabIdea.particles" 
+                        :key="p.id"
+                        class="gradient-particle"
+                        :style="{ 
+                          left: `calc(50% + ${p.x}px)`,
+                          bottom: `calc(20px + ${p.y}px)`,
+                          animationDelay: `${p.delay}s` 
+                        }"
+                      ></div>
+                    </div>
+                  </div>
+
+                  <!-- 3. 右栏：智能手机终端模拟 -->
+                  <div class="sandbox-column phone-column">
+                    <div class="column-header">📱 智域 App 移动监视端</div>
+                    
+                    <!-- 手机拟真框体 -->
+                    <div class="phone-frame" :class="{ 'vibrate-shake': activeLabIdea.shakeActive }">
+                      <div class="phone-notch"></div>
+                      
+                      <div class="phone-screen">
+                        <!-- 手机状态栏 -->
+                        <div class="screen-status-bar">
+                          <span>11:45</span>
+                          <span>📶 🔋</span>
+                        </div>
+
+                        <!-- 推理判定强震动弹窗 -->
+                        <div class="screen-alert-card">
+                          <div class="alert-header">
+                            <span class="alert-dot"></span>
+                            {{ activeLabIdea.scenarios[activeLabIdea.activeScenario].appTitle }}
+                          </div>
+                          <div class="alert-body">
+                            {{ activeLabIdea.scenarios[activeLabIdea.activeScenario].appDesc }}
+                          </div>
+                        </div>
+
+                        <!-- 第一人称日记卡片 -->
+                        <div class="screen-diary-card">
+                          <div class="diary-header">
+                            🐕 萌宠心情第一人称日记
+                          </div>
+                          <div class="diary-body">
+                            <p class="diary-text">{{ activeLabIdea.scenarios[activeLabIdea.activeScenario].diary }}</p>
+                          </div>
+                        </div>
+
+                        <!-- 增量模型反馈闭环 -->
+                        <div class="screen-feedback-loop">
+                          <div class="feedback-hint">对本次情绪判定进行小样本反馈:</div>
+                          <div class="feedback-actions">
+                            <button class="fb-btn correct" @click="triggerFineTuning(activeLabIdea)">
+                              ✔️ 翻译准确
+                            </button>
+                            <button class="fb-btn incorrect" @click="triggerFineTuning(activeLabIdea)">
+                              ❌ 是在撒娇
+                            </button>
+                          </div>
+                        </div>
+
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+      </transition>
     </main>
 
     <!-- Background decoration -->
@@ -2913,7 +2964,341 @@ const submitSparkIdea = () => {
   box-shadow: none;
 }
 
+/* ==========================================
+   创意设想孵化矩阵看板 - 卡片网格布局 
+   ========================================== */
+.ideas-section {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1.5rem 2rem;
+}
+
+.ideas-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+}
+
+/* 精美卡片基础样式 */
+.idea-card {
+  background: rgba(13, 20, 38, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 24px;
+  padding: 2rem 1.8rem;
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.3), inset 0 0 20px rgba(255, 255, 255, 0.01);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.idea-card-glow {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+  transition: opacity 0.3s ease;
+}
+
+.idea-card:hover {
+  transform: translateY(-8px);
+  border-color: var(--idea-color);
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.45), 0 0 25px rgba(var(--idea-color-rgb), 0.1);
+}
+
+.idea-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.8rem;
+  position: relative;
+  z-index: 2;
+}
+
+.idea-icon-wrapper {
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.idea-card:hover .idea-icon-wrapper {
+  transform: scale(1.08) rotate(5deg);
+}
+
+.status-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 99px;
+  border: 1px solid;
+}
+
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.status-dot.pulsing {
+  animation: pulseBreathe 2s infinite alternate;
+}
+
+@keyframes pulseBreathe {
+  0% { transform: scale(0.85); opacity: 0.5; }
+  100% { transform: scale(1.15); opacity: 1; }
+}
+
+.idea-card-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  z-index: 2;
+}
+
+.idea-title {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #f8fafc;
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.01em;
+}
+
+.idea-subtitle {
+  font-size: 0.85rem;
+  color: #64748b;
+  margin-bottom: 1.2rem;
+  line-height: 1.4;
+}
+
+.idea-brief-pain {
+  font-size: 0.85rem;
+  color: #94a3b8;
+  line-height: 1.6;
+  margin-top: auto;
+  border-top: 1px dashed rgba(255, 255, 255, 0.04);
+  padding-top: 1rem;
+}
+
+.idea-card-footer {
+  margin-top: 1.5rem;
+  position: relative;
+  z-index: 2;
+}
+
+.enter-lab-link {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  transition: all 0.3s ease;
+}
+
+.idea-card:hover .enter-lab-link {
+  transform: translateX(4px);
+}
+
+/* ==========================================
+   全屏毛玻璃概念验证实验室 Modal 
+   ========================================== */
+.lab-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(4, 7, 15, 0.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.lab-modal-content {
+  background: linear-gradient(135deg, #070b14 0%, #03050a 100%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 32px;
+  width: 100%;
+  max-width: 750px;
+  max-height: 90vh;
+  box-shadow: 0 35px 80px rgba(0, 0, 0, 0.9), 0 0 50px rgba(var(--lab-color), 0.05);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transform-origin: center;
+  animation: scaleUp 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.lab-modal-content.is-popy-lab {
+  max-width: 1100px;
+}
+
+@keyframes scaleUp {
+  from { transform: scale(0.95) translateY(10px); opacity: 0; }
+  to { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+.lab-modal-close {
+  position: absolute;
+  top: 1.8rem;
+  right: 1.8rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  color: #94a3b8;
+  font-size: 1.5rem;
+  line-height: 32px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  z-index: 100;
+}
+
+.lab-modal-close:hover {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: rgba(239, 68, 68, 0.3);
+  color: #ef4444;
+  transform: rotate(90deg);
+}
+
+.lab-modal-header {
+  padding: 2.2rem 2.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  position: relative;
+}
+
+.lab-header-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+}
+
+.lab-header-text-group {
+  flex: 1;
+}
+
+.lab-header-title {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: #f8fafc;
+  margin-bottom: 0.4rem;
+}
+
+.lab-header-subtitle {
+  font-size: 0.9rem;
+  color: #64748b;
+  margin: 0;
+}
+
+.lab-header-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 6px 14px;
+  border-radius: 99px;
+  border: 1px solid;
+  margin-right: 3rem;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.lab-modal-body {
+  padding: 2rem 2.5rem;
+  overflow-y: auto;
+  flex: 1;
+}
+
+/* 常规创意实验室详情四宫格 */
+.regular-lab-details {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+}
+
+.lab-detail-card {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 20px;
+  padding: 1.8rem;
+  box-shadow: inset 0 0 15px rgba(255, 255, 255, 0.01);
+  transition: all 0.3s ease;
+}
+
+.lab-detail-card:hover {
+  border-color: var(--lab-color);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.lab-card-icon {
+  font-size: 2rem;
+  margin-bottom: 0.8rem;
+}
+
+.lab-card-title {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #f8fafc;
+  margin-bottom: 0.6rem;
+}
+
+.lab-card-text {
+  font-size: 0.88rem;
+  line-height: 1.6;
+  color: #94a3b8;
+}
+
+/* 适配 Modal 里的 PoPyWaWa 宽度和间隙微调 */
+.lab-modal-content.is-popy-lab .lab-modal-body {
+  padding: 1.5rem 2.2rem 2.2rem 2.2rem;
+}
+
+.lab-modal-content.is-popy-lab .sandbox-divider {
+  margin: 0 0 1.5rem 0;
+}
+
 @media (max-width: 992px) {
+  .ideas-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
   .sandbox-grid {
     grid-template-columns: 1fr;
   }
@@ -2921,6 +3306,27 @@ const submitSparkIdea = () => {
     justify-content: center;
   }
   .spark-idea-card {
+    padding: 1.5rem;
+  }
+  .lab-modal-content {
+    max-height: 95vh;
+  }
+  .regular-lab-details {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .ideas-grid {
+    grid-template-columns: 1fr;
+  }
+  .lab-modal-overlay {
+    padding: 1rem;
+  }
+  .lab-modal-header {
+    padding: 1.5rem;
+  }
+  .lab-modal-body {
     padding: 1.5rem;
   }
 }
