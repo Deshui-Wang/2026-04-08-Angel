@@ -150,7 +150,7 @@ const productsData = {
   '顾得工具': [
     {
       id: 500,
-      title: 'PopyWawa',
+      title: '迷爪MeZa',
       description: 'AI 驱动的智能交互与内容生成平台，连接创意与未来的超级工具。',
       iconUrl: 'https://popywawa.deshui27.cn/pic/delove/DeLove03_transparent.png',
       link: 'https://popywawa.deshui27.cn/',
@@ -468,7 +468,7 @@ const sparkIdeaText = ref('')
 const dreamIdeas = ref([
   {
     id: 1,
-    title: 'PoPyWaWa',
+    title: '迷爪MeZa',
     subtitle: '宠物情绪与行为意图多模态解码项圈纽扣',
     statusText: '旗舰PoC验证中',
     color: '#38a169',
