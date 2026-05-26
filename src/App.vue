@@ -3295,6 +3295,32 @@ const submitSparkIdea = () => {
   margin: 0 0 1.5rem 0;
 }
 
+/* 常规白色项目卡片特异性样式 */
+.idea-card:not(.is-popy-card) {
+  background: #ffffff !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04), inset 0 0 20px rgba(255, 255, 255, 0.8) !important;
+}
+
+.idea-card:not(.is-popy-card) .idea-title {
+  color: #0f172a !important; /* 优雅的深灰黑 */
+}
+
+.idea-card:not(.is-popy-card) .idea-subtitle {
+  color: #475569 !important; /* 中等深灰色 */
+}
+
+.idea-card:not(.is-popy-card) .idea-brief-pain {
+  color: #475569 !important;
+  border-top: 1px dashed rgba(0, 0, 0, 0.06) !important;
+}
+
+.idea-card:not(.is-popy-card):hover {
+  transform: translateY(-8px);
+  border-color: var(--idea-color) !important;
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.08), 0 0 20px rgba(var(--idea-color-rgb), 0.05) !important;
+}
+
 @media (max-width: 992px) {
   .ideas-grid {
     grid-template-columns: repeat(2, 1fr);
