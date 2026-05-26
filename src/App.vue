@@ -143,7 +143,7 @@ watch(showPasswordModal, (val) => {
   }
 })
 
-const categories = ['基座系统', '智能助研', '智能助教', '智能伴学', '智能助管', '智能就业', '顾得工具']
+const categories = ['基座系统', '智能助管', '智能助教', '智能助研', '智能伴学', '智能就业']
 
 const productsData = {
   '顾得工具': [
@@ -201,6 +201,15 @@ const productsData = {
       icon: BookOpen,
       link: 'https://knowledge.deshui27.cn/',
       stats: '向量化精准检索',
+      color: '#475569',
+    },
+    {
+      id: 105,
+      title: 'AeiViz Studio',
+      description: '互动教育可视化生成工具，助力高校教学内容的创新与创造。',
+      icon: Layers,
+      link: 'https://aeiviz.deshui27.cn',
+      stats: '互动教学可视化',
       color: '#475569',
     }
   ],
@@ -472,6 +481,20 @@ const handleNavigate = (item) => {
         >
           战略分析
         </button>
+        <button 
+          class="nav-link" 
+          :class="{ active: currentView === 'advisor' }"
+          @click="currentView = 'advisor'"
+        >
+          采购建议
+        </button>
+        <button 
+          class="nav-link" 
+          :class="{ active: currentView === 'gude' }"
+          @click="currentView = 'gude'"
+        >
+          顾得工具
+        </button>
       </div>
       <div class="nav-links">
         <el-button type="primary" plain class="login-btn">登录工作台</el-button>
@@ -502,12 +525,6 @@ const handleNavigate = (item) => {
               @click="activeCategory = cat"
             >
               {{ cat }}
-            </button>
-          </div>
-          <div class="actions-group">
-            <button class="purchase-advisor-trigger" @click="showPurchaseAdvisor = true">
-              <Sparkles :size="18" class="sparkle-icon" />
-              <span>采购建议</span>
             </button>
           </div>
         </div>
@@ -670,17 +687,76 @@ const handleNavigate = (item) => {
       </div>
     </main>
 
-    <!-- Background decoration -->
-    <div class="bg-grid"></div>
-
-    <transition name="fade">
+    <!-- Advisor Page View -->
+    <main v-else-if="currentView === 'advisor'">
       <PurchaseAdvisor 
-        v-if="showPurchaseAdvisor" 
         :productsData="productsData" 
-        @close="showPurchaseAdvisor = false"
+        :isEmbed="true" 
         @navigate="handleNavigate"
       />
-    </transition>
+    </main>
+
+    <!-- Gude Tools Page View -->
+    <main v-else-if="currentView === 'gude'">
+      <section class="hero-section">
+        <div class="hero-content">
+          <h1 class="glow-text">
+            创意与未来的<br/>
+            <span class="gradient-text">数字生产力工具箱</span>
+          </h1>
+          <p class="hero-subtext">
+            精选多维度情感计算、多媒体工厂与超级交互引擎，解锁您的创意边界，享受有温度的 AI 生活。
+          </p>
+        </div>
+      </section>
+
+      <section class="products-section" style="padding-top: 1rem;">
+        <div class="products-list">
+          <div 
+            v-for="item in productsData['顾得工具']" 
+            :key="item.id"
+            class="product-card"
+            @mouseenter="activeId = item.id"
+            @mouseleave="activeId = null"
+            @click="handleNavigate(item)"
+          >
+            <div class="card-glow" :style="{ background: `radial-gradient(circle at right, ${item.color}33, transparent 70%)`, opacity: activeId === item.id ? 1 : 0 }"></div>
+            
+            <div class="card-content">
+              <div class="icon-wrapper" :style="{ backgroundColor: `${item.color}1A`, color: item.color }">
+                <img v-if="item.iconUrl" :src="item.iconUrl" :alt="item.title" class="custom-icon" />
+                <component v-else :is="item.icon" :size="32" />
+              </div>
+              
+              <div class="product-info">
+                <h3 class="product-title">{{ item.title }}</h3>
+                <p class="product-desc">{{ item.description }}</p>
+              </div>
+
+              <div class="product-meta">
+                <span class="meta-tag" :style="{ backgroundColor: item.color }">
+                  <span class="dot"></span>
+                  {{ item.stats }}
+                </span>
+                <el-button 
+                  round 
+                  class="enter-btn"
+                  :class="{ 'is-active': activeId === item.id }"
+                  :style="activeId === item.id ? { backgroundColor: item.color, borderColor: item.color, color: '#fff' } : {}"
+                  @click.stop="handleNavigate(item)"
+                >
+                  进入产品
+                  <ArrowRight class="btn-icon" :size="16" />
+                </el-button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Background decoration -->
+    <div class="bg-grid"></div>
 
     <!-- Premium Password Modal -->
     <transition name="modal-fade">

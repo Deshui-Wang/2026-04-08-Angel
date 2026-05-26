@@ -1,5 +1,6 @@
 <script setup>
 import { ref, computed } from 'vue'
+import { ElMessage } from 'element-plus'
 import { 
   X, 
   Check, 
@@ -22,10 +23,18 @@ const props = defineProps({
   productsData: {
     type: Object,
     required: true
+  },
+  isEmbed: {
+    type: Boolean,
+    default: false
   }
 })
 
 const emit = defineEmits(['close', 'navigate'])
+
+const handleContact = () => {
+  ElMessage.success('已收到您的意向，我们的采购专家将尽快与您联系！')
+}
 
 // --- Quick Match Data ---
 const needs = [
@@ -210,7 +219,212 @@ const handleOpenProduct = (product) => {
 </script>
 
 <template>
-  <div class="purchase-advisor-overlay" @click.self="$emit('close')">
+  <!-- [NEW] 页面级双栏侧边栏切换布局 -->
+  <div v-if="isEmbed" class="purchase-advisor-embed-container">
+    
+    <!-- 左侧固定侧边栏 aside -->
+    <aside class="strategy-sidebar">
+      <div class="sidebar-header">
+        <Sparkles :size="24" />
+        <span>采购建议</span>
+      </div>
+      <nav class="strategy-nav">
+        <!-- 极速模式页签 -->
+        <button 
+          class="strategy-tab-btn"
+          :class="{ active: advisorMode === 'quick' }"
+          @click="switchMode('quick')"
+        >
+          <Zap :size="18" />
+          极速匹配
+        </button>
+        <!-- 诊断模式页签 -->
+        <button 
+          class="strategy-tab-btn"
+          :class="{ active: advisorMode === 'diagnostic' }"
+          @click="switchMode('diagnostic')"
+        >
+          <Stethoscope :size="18" />
+          场景诊断
+        </button>
+      </nav>
+    </aside>
+
+    <!-- 右侧内容区 section -->
+    <section class="strategy-content advisor-embed-content">
+      <div class="advisor-embed-body">
+        
+        <!-- header 头部标题 -->
+        <div class="pane-header">
+          <h2 class="pane-title">智能采购建议</h2>
+          <p class="pane-subtitle">
+            {{ advisorMode === 'diagnostic' ? '针对性场景诊断，为您量身定制系统矩阵' : '基于业务需求，为您精准推荐产品矩阵' }}
+          </p>
+        </div>
+
+        <!-- 核心表单区域 -->
+        
+        <!-- MODE: QUICK -->
+        <div v-if="advisorMode === 'quick' && !isAnalyzing && !showResults" class="step-content">
+          <div class="prompt-section">
+            <div class="prompt-header">
+              <MessageSquareText :size="18" class="prompt-icon" />
+              <span>直接描述您的具体场景（可选）</span>
+            </div>
+            <div class="prompt-input-wrapper">
+              <textarea 
+                v-model="userPrompt" 
+                placeholder="例如：我需要一个能够帮助老师进行日常阅卷，并且能分析学生学习进度的系统..."
+                rows="3"
+                class="prompt-textarea"
+              ></textarea>
+              <div class="prompt-hint">
+                <Search :size="14" />
+                <span>智能引擎将自动识别关键字进行匹配</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="divider">
+            <span>或者点击选择以下需求标签</span>
+          </div>
+
+          <div class="needs-grid">
+            <div 
+              v-for="need in needs" 
+              :key="need.id"
+              class="need-card"
+              :class="{ active: selectedNeeds.includes(need.id) }"
+              @click="toggleNeed(need.id)"
+            >
+              <div class="check-badge">
+                <Check v-if="selectedNeeds.includes(need.id)" :size="12" />
+              </div>
+              <div class="need-icon">
+                <component :is="need.icon" :size="28" />
+              </div>
+              <span class="need-label">{{ need.label }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- MODE: DIAGNOSTIC -->
+        <div v-if="advisorMode === 'diagnostic' && !isAnalyzing && !showResults" class="step-content diagnostic-step">
+          <!-- Step 1: Role Selection -->
+          <div v-if="diagnosticStep === 1">
+            <div class="diag-header-text">
+              <h4>请选择您的业务部门/角色身份</h4>
+              <p>我们将根据您的角色背景提供针对性的诊断项</p>
+            </div>
+            <div class="roles-grid">
+              <div 
+                v-for="role in diagnosticRoles" 
+                :key="role.id"
+                class="role-card"
+                @click="selectRole(role.id)"
+              >
+                <div class="role-icon">
+                  <UserCircle :size="32" />
+                </div>
+                <h5>{{ role.name }}</h5>
+                <p>{{ role.desc }}</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 2: Symptoms -->
+          <div v-if="diagnosticStep === 2">
+            <div class="diag-header-text has-back">
+              <button class="back-link" @click="diagnosticStep = 1">
+                <ChevronLeft :size="16" />
+                返回身份选择
+              </button>
+              <h4>针对【{{ currentRole?.name }}】，您是否正面临以下痛点？</h4>
+              <p>多选痛点场景，我们将为您构建完整的解决方案映射</p>
+            </div>
+            <div class="symptoms-list">
+              <div 
+                v-for="symptom in currentRole?.symptoms" 
+                :key="symptom.id"
+                class="symptom-item"
+                :class="{ active: selectedSymptomIds.includes(symptom.id) }"
+                @click="toggleSymptom(symptom.id)"
+              >
+                <div class="symptom-check">
+                  <Check v-if="selectedSymptomIds.includes(symptom.id)" :size="14" />
+                </div>
+                <span class="symptom-text">{{ symptom.text }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SHARED: Analysis State -->
+        <div v-if="isAnalyzing" class="analysis-state">
+          <div class="loading-spinner"></div>
+          <p class="loading-text">{{ advisorMode === 'diagnostic' ? '正在进行场景建模与矩阵匹配...' : '正在匹配产品特性与需求场景...' }}</p>
+        </div>
+
+        <!-- SHARED: Results State -->
+        <div v-if="showResults" class="results-state">
+          <div class="results-header">
+            <h4>根据诊断结果，推荐为您配置以下产品方案</h4>
+            <button class="reselect-btn" @click="reset">重新开始</button>
+          </div>
+
+          <div class="recommendations-list">
+            <div 
+              v-for="product in recommendedProducts" 
+              :key="product.id"
+              class="recommendation-item"
+              :class="{ 'base-item': product.isBase }"
+              @click="handleOpenProduct(product)"
+            >
+              <div class="product-icon" :style="{ backgroundColor: `${product.color}15`, color: product.color }">
+                <component :is="product.icon" :size="20" v-if="product.icon" />
+                <Workflow :size="20" v-else />
+              </div>
+              <div class="product-info">
+                <h5>{{ product.title }} <span v-if="product.isBase" class="base-tag">推荐配套基座</span></h5>
+                <p>{{ product.description }}</p>
+              </div>
+              <div class="match-tag" :style="{ color: product.color }">
+                匹配度 {{ product.isBase ? '60%' : '98%' }}
+              </div>
+            </div>
+          </div>
+          
+          <div v-if="advisorMode === 'diagnostic'" class="diag-note">
+            <DatabaseZap :size="14" />
+            <span>注：以上 AI 业务的高效运转，依赖于统一的数据底座与算力支撑。</span>
+          </div>
+
+          <div class="final-cta">
+            <button class="collab-btn" @click="handleContact">
+              联系我们洽谈合作
+            </button>
+          </div>
+        </div>
+
+        <!-- SHARED: Footer Action for Step 1 -->
+        <div v-if="!isAnalyzing && !showResults" class="footer-actions">
+          <button 
+            v-if="advisorMode === 'quick' || diagnosticStep === 2"
+            class="analyze-btn" 
+            :disabled="(advisorMode === 'quick' && !selectedNeeds.length && !userPrompt.trim()) || (advisorMode === 'diagnostic' && !selectedSymptomIds.length)"
+            @click="startAnalysis"
+          >
+            <span>{{ advisorMode === 'diagnostic' ? '生成诊断处方' : '生成智能采购建议' }}</span>
+            <ArrowRight :size="18" />
+          </button>
+        </div>
+
+      </div>
+    </section>
+  </div>
+
+  <!-- [RETORT] 向下兼容的传统 Overlay 弹窗模式 -->
+  <div v-else class="purchase-advisor-overlay" @click.self="$emit('close')">
     <div class="advisor-modal">
       <header class="modal-header">
         <div class="title-group">
@@ -609,4 +823,162 @@ const handleOpenProduct = (product) => {
 .final-cta { display: flex; justify-content: center; }
 .collab-btn { width: 100%; background: linear-gradient(135deg, #3b82f6, #8b5cf6); color: #fff; border: none; padding: 14px; border-radius: 12px; font-weight: 700; cursor: pointer; transition: all 0.3s; }
 .collab-btn:hover { opacity: 0.9; transform: translateY(-2px); box-shadow: 0 10px 30px -10px rgba(59, 130, 246, 0.5); }
+
+/* 嵌入式页面双栏侧边栏高端样式 */
+.purchase-advisor-embed-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 100px auto 40px auto;
+  padding: 0 2rem;
+  box-sizing: border-box;
+  display: flex;
+  gap: 3rem;
+  min-height: 70vh;
+  animation: pageSlideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes pageSlideUp {
+  from { opacity: 0; transform: translateY(30px); filter: blur(5px); }
+  to { opacity: 1; transform: translateY(0); filter: blur(0); }
+}
+
+/* 侧边栏样式复刻与优化 */
+.purchase-advisor-embed-container .strategy-sidebar {
+  width: 240px;
+  flex-shrink: 0;
+  display: block;
+}
+
+.purchase-advisor-embed-container .sidebar-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 2rem;
+  color: #0f172a;
+  font-weight: 700;
+  font-size: 1.2rem;
+}
+
+.purchase-advisor-embed-container .strategy-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.purchase-advisor-embed-container .strategy-tab-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+  border: none;
+  background: transparent;
+  border-radius: 12px;
+  color: #64748b;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 100%;
+  text-align: left;
+  font-size: 0.95rem;
+}
+
+.purchase-advisor-embed-container .strategy-tab-btn:hover {
+  background: rgba(0, 0, 0, 0.03);
+  color: #0f172a;
+}
+
+.purchase-advisor-embed-container .strategy-tab-btn.active {
+  background: #0f172a;
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* 右侧内容面板复刻与优化 */
+.purchase-advisor-embed-container .strategy-content {
+  flex: 1;
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  border-radius: 32px;
+  padding: 3rem;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.02);
+}
+
+.purchase-advisor-embed-container .pane-header {
+  margin-bottom: 3rem;
+}
+
+.purchase-advisor-embed-container .pane-title {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 0.5rem;
+}
+
+.purchase-advisor-embed-container .pane-subtitle {
+  font-size: 1.05rem;
+  color: #64748b;
+  margin: 0;
+}
+
+/* 巨幕下的响应式网格及高度自适应 */
+
+/* 1. 极速模式下的需求标签扩展为三列并加大内距 */
+.purchase-advisor-embed-container .needs-grid {
+  grid-template-columns: repeat(3, 1fr) !important;
+  gap: 16px !important;
+}
+
+.purchase-advisor-embed-container .need-card {
+  padding: 20px 24px !important;
+}
+
+/* 2. 诊断第一步：部门卡片改为三列排版以契合双栏比例 */
+.purchase-advisor-embed-container .roles-grid {
+  grid-template-columns: repeat(3, 1fr) !important;
+  gap: 16px !important;
+}
+
+.purchase-advisor-embed-container .role-card {
+  padding: 28px 16px !important;
+}
+
+/* 3. 诊断第二步：痛点场景双列卡片并排 */
+.purchase-advisor-embed-container .symptoms-list {
+  display: grid !important;
+  grid-template-columns: repeat(2, 1fr) !important;
+  gap: 16px !important;
+}
+
+/* 4. 推荐结果页：消除内嵌滚动条限制，并升级为双列网格卡片 */
+.purchase-advisor-embed-container .recommendations-list {
+  display: grid !important;
+  grid-template-columns: repeat(2, 1fr) !important;
+  gap: 20px !important;
+  max-height: none !important; /* 彻底解除最大高度限制 */
+  overflow-y: visible !important; /* 去除内嵌滚动条 */
+  padding-right: 0 !important;
+}
+
+/* 推荐产品卡片样式全面升级 */
+.purchase-advisor-embed-container .recommendation-item {
+  padding: 24px !important;
+  border-radius: 18px !important;
+  background: rgba(248, 250, 252, 0.6) !important;
+  border: 1px solid rgba(241, 245, 249, 0.8) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  cursor: pointer !important;
+}
+
+.purchase-advisor-embed-container .recommendation-item:hover {
+  background: #ffffff !important;
+  border-color: #3b82f6 !important;
+  transform: translateY(-4px) !important;
+  box-shadow: 0 16px 36px -12px rgba(59, 130, 246, 0.15) !important;
+}
+
+/* 页面模式下，微调底部 CTA 按钮宽度，使其更符合页面级的高档感 */
+.purchase-advisor-embed-container .final-cta {
+  max-width: 400px;
+  margin: 0 auto;
+}
 </style>
