@@ -755,6 +755,293 @@ const handleNavigate = (item) => {
       </section>
     </main>
 
+    <!-- [NEW] 创业梦工厂专属页面 -->
+    <main v-else-if="currentView === 'dreamFactory'" class="dream-factory-page">
+      <section class="hero-section">
+        <div class="hero-content">
+          <h1 class="glow-text">
+            创业梦工厂<br/>
+            <span class="gradient-text">Startup Dream Factory</span>
+          </h1>
+          <p class="hero-subtext">
+            探索未来科技与教育交互的无限可能，点亮创新设想的孵化看板。
+          </p>
+        </div>
+      </section>
+
+      <!-- 创意设想孵化矩阵看板 -->
+      <section class="ideas-section">
+        <div class="ideas-grid">
+          
+          <!-- 遍历所有创意想法 -->
+          <div 
+            v-for="idea in dreamIdeas" 
+            :key="idea.id" 
+            class="idea-card"
+            :class="{ 'is-popy-card': idea.isPopy, 'is-open': idea.isOpen }"
+            :style="{ '--idea-color': idea.color }"
+          >
+            <!-- 头部：图标与状态呼吸灯 -->
+            <div class="idea-card-header">
+              <div class="idea-icon-wrapper" :style="{ backgroundColor: `${idea.color}15`, color: idea.color }">
+                <component :is="idea.icon" :size="24" />
+              </div>
+              <div class="status-badge" :style="{ color: idea.color, borderColor: `${idea.color}30`, backgroundColor: `${idea.color}08` }">
+                <span class="status-dot pulsing" :style="{ backgroundColor: idea.color, boxShadow: `0 0 8px ${idea.color}` }"></span>
+                {{ idea.statusText }}
+              </div>
+            </div>
+
+            <!-- 核心标题与副标题 -->
+            <div class="idea-card-body">
+              <h3 class="idea-title">{{ idea.title }}</h3>
+              <p class="idea-subtitle">{{ idea.subtitle }}</p>
+            </div>
+
+            <!-- 可折叠/展开的深度细节面板触发器 -->
+            <div class="idea-accordion-trigger" @click="idea.isOpen = !idea.isOpen">
+              <span>{{ idea.isOpen ? '收起设想细节' : '展开多维设想细节' }}</span>
+              <component :is="idea.isOpen ? ChevronLeft : ArrowRight" class="arrow-icon" :size="16" :style="{ transform: `rotate(${idea.isOpen ? '90deg' : '0'})`, transition: 'all 0.3s' }" />
+            </div>
+
+            <!-- 展开的细节区 -->
+            <div v-show="idea.isOpen" class="idea-accordion-content">
+              
+              <!-- 情况 A：普通创意折叠面板（EduChain, VRLab, UniMeet） -->
+              <div v-if="!idea.isPopy" class="regular-idea-details">
+                <div class="detail-block">
+                  <span class="detail-label">🚨 痛点分析:</span>
+                  <p class="detail-text">{{ idea.painpoint }}</p>
+                </div>
+                <div class="detail-block">
+                  <span class="detail-label">💡 核心方案:</span>
+                  <p class="detail-text">{{ idea.solution }}</p>
+                </div>
+                <div class="detail-block">
+                  <span class="detail-label">💎 商业估值:</span>
+                  <p class="detail-text">{{ idea.business }}</p>
+                </div>
+                <div class="detail-block">
+                  <span class="detail-label">🛠️ 核心技术:</span>
+                  <p class="detail-text">{{ idea.tech }}</p>
+                </div>
+              </div>
+
+              <!-- 情况 B：旗舰级可交互 PoC 沙盒实验室（PoPyWaWa） -->
+              <div v-else class="popy-sandbox-lab">
+                <div class="sandbox-divider"><span>PoC 端侧多模态 AI 概念实验室</span></div>
+                
+                <div class="sandbox-grid">
+                  <!-- 1. 左栏：2D矢量宠物项圈拆解图 -->
+                  <div class="sandbox-column collar-column">
+                    <div class="column-header">🔍 项圈几何结构分析</div>
+                    <div class="collar-visual-box">
+                      <!-- 高级 SVG 渲染智能项圈与纽扣 -->
+                      <svg class="collar-svg" viewBox="0 0 200 200">
+                        <circle cx="100" cy="100" r="70" fill="none" stroke="rgba(56, 161, 105, 0.15)" stroke-width="12" />
+                        <circle cx="100" cy="100" r="70" fill="none" stroke="url(#collar-grad)" stroke-width="8" stroke-dasharray="440" stroke-dashoffset="80" />
+                        <!-- 骨传导挂饰悬坠 -->
+                        <g class="pendant-g">
+                          <line x1="100" y1="170" x2="100" y2="185" stroke="#38a169" stroke-width="3" />
+                          <circle cx="100" cy="185" r="12" fill="#0f172a" stroke="#38a169" stroke-width="2" />
+                          <circle cx="100" cy="185" r="4" fill="#58d68d" class="pendant-pulse" />
+                        </g>
+                        <!-- 后脑高位感知片 -->
+                        <g class="sensor-g">
+                          <rect x="85" y="22" width="30" height="12" rx="4" fill="#0f172a" stroke="#38a169" stroke-width="2" />
+                          <circle cx="100" cy="28" r="3" fill="#e74c3c" class="sensor-pulse" />
+                        </g>
+                        <!-- 渐变渲染定义 -->
+                        <defs>
+                          <linearGradient id="collar-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#38a169" />
+                            <stop offset="100%" stop-color="#1a365d" />
+                          </linearGradient>
+                        </defs>
+                      </svg>
+
+                      <!-- 交互脉冲锚点 A：下巴低位项坠 -->
+                      <div class="collar-anchor anchor-chin tooltip-trigger">
+                        <span class="anchor-dot"></span>
+                        <div class="tooltip-bubble">
+                          <strong>⚓ 下巴低位挂坠（纽扣核心）：</strong>
+                          <p>重力锚点平衡项圈（配重质量 > 65%），内置骨传导声学拾音器与110°前向同视角超微摄像头。</p>
+                        </div>
+                      </div>
+
+                      <!-- 交互脉冲锚点 B：后脑高位感知片 -->
+                      <div class="collar-anchor anchor-atlas tooltip-trigger">
+                        <span class="anchor-dot"></span>
+                        <div class="tooltip-bubble">
+                          <strong>🧠 后脑高位感知柔性片：</strong>
+                          <p>极轻量级寰椎关节阻尼片（质量占比 < 15%），内置高频六轴 IMU，深度捕捉头部偏侧、颤抖与细微点头幅率。</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="collar-caption">💡 鼠标Hover圆环上的绿色脉冲点可查阅专业构造</div>
+                  </div>
+
+                  <!-- 2. 中栏：端侧推理控制台 (波形图 & 融合公式) -->
+                  <div class="sandbox-column control-column">
+                    <div class="column-header">🎛️ 实验室端侧推理控制台</div>
+                    
+                    <!-- 场景切换 Tab -->
+                    <div class="scenario-selector">
+                      <button 
+                        v-for="(scene, key) in idea.scenarios" 
+                        :key="key"
+                        class="scenario-tab"
+                        :class="{ active: idea.activeScenario === key }"
+                        @click="switchScenario(idea, key)"
+                      >
+                        {{ scene.name }}
+                      </button>
+                    </div>
+
+                    <!-- 输入端实时模拟数据流 -->
+                    <div class="data-streams">
+                      <div class="stream-item">
+                        <div class="stream-label">🎙️ 声学特征波谱 (Audio Wave)</div>
+                        <div class="wave-box">
+                          <!-- 10个动态起伏声波条 -->
+                          <div 
+                            v-for="i in 10" 
+                            :key="i" 
+                            class="audio-bar"
+                            :style="{ 
+                              animationDuration: idea.scenarios[idea.activeScenario].audioFreq,
+                              animationDelay: `${i * 0.05}s`
+                            }"
+                          ></div>
+                        </div>
+                      </div>
+
+                      <div class="stream-item">
+                        <div class="stream-label">🧭 六轴动作惯性流 (IMU Flux)</div>
+                        <div class="imu-box">
+                          <svg class="imu-svg" viewBox="0 0 100 20">
+                            <!-- 模拟三轴运动波形折线图 -->
+                            <path d="M 0 10 Q 15 2, 30 14 T 60 8 T 90 12 L 100 10" fill="none" stroke="#38a169" stroke-width="1.5" class="imu-path" />
+                            <path d="M 0 8 Q 20 18, 40 4 T 80 16 L 100 8" fill="none" stroke="#3b82f6" stroke-width="1" class="imu-path-blue" />
+                          </svg>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- AI 特征矩阵拼接公式 -->
+                    <div class="fusion-formula-box">
+                      <div class="formula-title">🧮 特征向量矩阵融合 (Feature Fusion)</div>
+                      <div class="formula-latex">
+                        M<sub>fusion</sub> = [ V<sub>audio</sub>, V<sub>motion</sub>, V<sub>context</sub> ]
+                      </div>
+                      <!-- 模型反馈飞出的绿色微粒 -->
+                      <div 
+                        v-for="p in idea.particles" 
+                        :key="p.id"
+                        class="gradient-particle"
+                        :style="{ 
+                          left: `calc(50% + ${p.x}px)`,
+                          bottom: `calc(20px + ${p.y}px)`,
+                          animationDelay: `${p.delay}s` 
+                        }"
+                      ></div>
+                    </div>
+                  </div>
+
+                  <!-- 3. 右栏：智能手机终端模拟 -->
+                  <div class="sandbox-column phone-column">
+                    <div class="column-header">📱 智域 App 移动监视端</div>
+                    
+                    <!-- 手机拟真框体 -->
+                    <div class="phone-frame" :class="{ 'vibrate-shake': idea.shakeActive }">
+                      <div class="phone-notch"></div>
+                      
+                      <div class="phone-screen">
+                        <!-- 手机状态栏 -->
+                        <div class="screen-status-bar">
+                          <span>11:45</span>
+                          <span>📶 🔋</span>
+                        </div>
+
+                        <!-- 推理判定强震动弹窗 -->
+                        <div class="screen-alert-card">
+                          <div class="alert-header">
+                            <span class="alert-dot"></span>
+                            {{ idea.scenarios[idea.activeScenario].appTitle }}
+                          </div>
+                          <div class="alert-body">
+                            {{ idea.scenarios[idea.activeScenario].appDesc }}
+                          </div>
+                        </div>
+
+                        <!-- 第一人称日记卡片 -->
+                        <div class="screen-diary-card">
+                          <div class="diary-header">
+                            🐕 萌宠心情第一人称日记
+                          </div>
+                          <!-- 包含随着场景动态变化的日记 -->
+                          <div class="diary-body">
+                            <p class="diary-text">{{ idea.scenarios[idea.activeScenario].diary }}</p>
+                          </div>
+                        </div>
+
+                        <!-- 增量模型反馈闭环 -->
+                        <div class="screen-feedback-loop">
+                          <div class="feedback-hint">对本次情绪判定进行小样本反馈:</div>
+                          <div class="feedback-actions">
+                            <button class="fb-btn correct" @click="triggerFineTuning(idea)">
+                              ✔️ 翻译准确
+                            </button>
+                            <button class="fb-btn incorrect" @click="triggerFineTuning(idea)">
+                              ❌ 是在撒娇
+                            </button>
+                          </div>
+                        </div>
+
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 创意火花投递箱 -->
+      <section class="spark-idea-section">
+        <div class="spark-idea-card">
+          <div class="spark-glow"></div>
+          <div class="spark-header">
+            <div class="spark-icon-wrapper">
+              <Sparkles :size="24" />
+            </div>
+            <h3>投递您的创意火花</h3>
+            <p>我们相信每一个伟大的创业都始于一个小小的灵感火花。请在此投递您的想法，梦工厂孵化专家将助您点石成金。</p>
+          </div>
+          <div class="spark-body">
+            <textarea 
+              v-model="sparkIdeaText" 
+              placeholder="请描述您的创意点子、想要解决的问题或者创业想法..."
+              rows="4"
+              class="spark-textarea"
+            ></textarea>
+          </div>
+          <div class="spark-footer">
+            <button 
+              class="submit-spark-btn"
+              :disabled="!sparkIdeaText.trim()"
+              @click="submitSparkIdea"
+            >
+              向火花智囊团投递创意
+              <ArrowRight :size="18" />
+            </button>
+          </div>
+        </div>
+      </section>
+    </main>
+
     <!-- Background decoration -->
     <div class="bg-grid"></div>
 
@@ -1751,6 +2038,755 @@ const handleNavigate = (item) => {
   }
   .summary-grid, .pricing-tiers {
     grid-template-columns: 1fr;
+  }
+}
+
+/* ==========================================
+   创业梦工厂 & PoPyWaWa 旗舰 PoC 概念实验室 
+   ========================================== */
+
+/* 专属旗舰级卡片样式 */
+.is-popy-card {
+  background: linear-gradient(135deg, #0b1329 0%, #050814 100%) !important;
+  border: 1px solid rgba(56, 161, 105, 0.25) !important;
+  box-shadow: 0 20px 50px rgba(5, 8, 20, 0.8), 0 0 30px rgba(56, 161, 105, 0.05) !important;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.is-popy-card::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(56, 161, 105, 0.03) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* 实验室水平分割线 */
+.sandbox-divider {
+  display: flex;
+  align-items: center;
+  margin: 2.5rem 0 2rem 0;
+  position: relative;
+}
+
+.sandbox-divider::before,
+.sandbox-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(56, 161, 105, 0.3), transparent);
+}
+
+.sandbox-divider span {
+  padding: 0 1.5rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: #38a169;
+  text-shadow: 0 0 10px rgba(56, 161, 105, 0.4);
+}
+
+/* 实验室主格网 */
+.popy-sandbox-lab {
+  width: 100%;
+  margin-top: 1.5rem;
+}
+
+.sandbox-grid {
+  display: grid;
+  grid-template-columns: 1.1fr 1.2fr 1fr;
+  gap: 1.5rem;
+  align-items: stretch;
+}
+
+/* 栏目共有样式 */
+.sandbox-column {
+  background: rgba(13, 20, 38, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 20px;
+  padding: 1.5rem;
+  backdrop-filter: blur(10px);
+  display: flex;
+  flex-direction: column;
+  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.6);
+  transition: all 0.3s ease;
+}
+
+.sandbox-column:hover {
+  border-color: rgba(56, 161, 105, 0.2);
+  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.6), 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.column-header {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #f8fafc;
+  margin-bottom: 1.2rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  padding-bottom: 0.8rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* 左栏：宠物项圈结构拆解图 */
+.collar-column {
+  position: relative;
+}
+
+.collar-visual-box {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  min-height: 240px;
+  background: radial-gradient(circle, rgba(26, 54, 93, 0.1) 0%, transparent 80%);
+  border-radius: 16px;
+  border: 1px dashed rgba(255, 255, 255, 0.03);
+}
+
+.collar-svg {
+  width: 80%;
+  height: 80%;
+  transform-origin: center;
+  animation: svgRotate 30s linear infinite;
+}
+
+@keyframes svgRotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.pendant-pulse {
+  animation: pulseGreen 2s infinite alternate;
+}
+
+.sensor-pulse {
+  animation: pulseRed 1.5s infinite alternate;
+}
+
+@keyframes pulseGreen {
+  0% { r: 3px; fill-opacity: 0.6; }
+  100% { r: 5px; fill-opacity: 1; filter: drop-shadow(0 0 6px #38a169); }
+}
+
+@keyframes pulseRed {
+  0% { r: 2px; fill-opacity: 0.6; }
+  100% { r: 4px; fill-opacity: 1; filter: drop-shadow(0 0 6px #e74c3c); }
+}
+
+/* 交互脉冲锚点 */
+.collar-anchor {
+  position: absolute;
+  cursor: pointer;
+  z-index: 10;
+}
+
+.anchor-chin {
+  bottom: 18%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.anchor-atlas {
+  top: 15%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.anchor-dot {
+  width: 14px;
+  height: 14px;
+  background-color: #38a169;
+  border-radius: 50%;
+  display: block;
+  border: 2px solid #ffffff;
+  position: relative;
+  box-shadow: 0 0 10px rgba(56, 161, 105, 0.8);
+}
+
+.anchor-dot::after {
+  content: '';
+  position: absolute;
+  top: -8px;
+  left: -8px;
+  right: -8px;
+  bottom: -8px;
+  border: 1.5px solid #38a169;
+  border-radius: 50%;
+  animation: ripple 2s infinite;
+  opacity: 0;
+}
+
+@keyframes ripple {
+  0% { transform: scale(0.6); opacity: 0; }
+  50% { opacity: 0.8; }
+  100% { transform: scale(1.6); opacity: 0; }
+}
+
+/* Tooltip 悬浮气泡 */
+.tooltip-trigger {
+  position: absolute;
+}
+
+.tooltip-bubble {
+  position: absolute;
+  bottom: 160%;
+  left: 50%;
+  transform: translateX(-50%) translateY(10px) scale(0.95);
+  width: 220px;
+  background: rgba(10, 15, 30, 0.95);
+  border: 1px solid rgba(56, 161, 105, 0.4);
+  border-radius: 12px;
+  padding: 1rem;
+  color: #e2e8f0;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  pointer-events: none;
+  opacity: 0;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.8), 0 0 15px rgba(56, 161, 105, 0.1);
+  z-index: 100;
+  text-align: left;
+  backdrop-filter: blur(10px);
+}
+
+.tooltip-bubble::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top-color: rgba(56, 161, 105, 0.4);
+}
+
+.tooltip-trigger:hover .tooltip-bubble {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0) scale(1);
+}
+
+.tooltip-bubble strong {
+  color: #58d68d;
+  display: block;
+  margin-bottom: 0.4rem;
+  font-size: 0.85rem;
+}
+
+.tooltip-bubble p {
+  margin: 0;
+  color: #94a3b8;
+}
+
+.collar-caption {
+  font-size: 0.75rem;
+  color: #64748b;
+  text-align: center;
+  margin-top: 1rem;
+}
+
+/* 中栏：端侧推理控制台 */
+.scenario-selector {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 1.5rem;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 4px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.scenario-tab {
+  flex: 1;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  background: transparent;
+  color: #94a3b8;
+  transition: all 0.3s ease;
+}
+
+.scenario-tab:hover {
+  color: #f8fafc;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.scenario-tab.active {
+  background: #38a169;
+  color: #ffffff;
+  box-shadow: 0 0 12px rgba(56, 161, 105, 0.4);
+}
+
+.data-streams {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  margin-bottom: 1.5rem;
+}
+
+.stream-item {
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.03);
+  border-radius: 12px;
+  padding: 1rem;
+}
+
+.stream-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #94a3b8;
+  margin-bottom: 0.8rem;
+  letter-spacing: 0.05em;
+}
+
+/* 声波特效 */
+.wave-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 50px;
+  padding: 0 10px;
+}
+
+.audio-bar {
+  flex: 1;
+  height: 100%;
+  background: linear-gradient(180deg, #38a169 0%, #3b82f6 100%);
+  border-radius: 3px;
+  transform-origin: bottom;
+  animation: audioWaveUp 1s ease-in-out infinite alternate;
+}
+
+@keyframes audioWaveUp {
+  0% { transform: scaleY(0.15); }
+  100% { transform: scaleY(0.9); }
+}
+
+/* IMU折线特效 */
+.imu-box {
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.imu-svg {
+  width: 100%;
+  height: 100%;
+}
+
+.imu-path {
+  stroke-dasharray: 200;
+  animation: lineFlow 4s linear infinite;
+}
+
+.imu-path-blue {
+  stroke-dasharray: 200;
+  animation: lineFlow 6s linear infinite reverse;
+}
+
+@keyframes lineFlow {
+  from { stroke-dashoffset: 200; }
+  to { stroke-dashoffset: 0; }
+}
+
+/* 公式网格 */
+.fusion-formula-box {
+  position: relative;
+  background: linear-gradient(135deg, rgba(26, 54, 93, 0.2) 0%, rgba(56, 161, 105, 0.05) 100%);
+  border: 1px solid rgba(56, 161, 105, 0.15);
+  border-radius: 14px;
+  padding: 1.2rem;
+  text-align: center;
+  overflow: visible;
+}
+
+.formula-title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #38a169;
+  margin-bottom: 0.5rem;
+  text-shadow: 0 0 10px rgba(56, 161, 105, 0.2);
+}
+
+.formula-latex {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.95rem;
+  color: #f8fafc;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  padding: 0.4rem 0;
+}
+
+/* 极客微粒飞升动画 */
+.gradient-particle {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background-color: #58d68d;
+  border-radius: 50%;
+  pointer-events: none;
+  box-shadow: 0 0 8px #38a169;
+  animation: particleFly 1s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+@keyframes particleFly {
+  0% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(var(--p-tx, 0px), var(--p-ty, -150px)) scale(0.2);
+    opacity: 0;
+  }
+}
+
+/* 右栏：智能手机框体 */
+.phone-column {
+  align-items: center;
+}
+
+.phone-frame {
+  width: 100%;
+  max-width: 250px;
+  aspect-ratio: 1 / 2;
+  background: #000000;
+  border: 7px solid #1e293b;
+  border-radius: 36px;
+  position: relative;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.8), inset 0 0 10px rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.phone-notch {
+  width: 110px;
+  height: 18px;
+  background: #1e293b;
+  border-radius: 0 0 14px 14px;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 50;
+}
+
+.phone-screen {
+  flex: 1;
+  background: #090d16;
+  padding: 24px 12px 12px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow: hidden;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+.screen-status-bar {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.65rem;
+  color: #64748b;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+/* 震动弹窗 */
+.screen-alert-card {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 12px;
+  padding: 10px;
+  color: #fca5a5;
+  box-shadow: 0 4px 15px rgba(239, 68, 68, 0.15);
+  animation: alertPulse 2s infinite alternate;
+}
+
+@keyframes alertPulse {
+  0% { border-color: rgba(239, 68, 68, 0.3); box-shadow: 0 4px 15px rgba(239, 68, 68, 0.15); }
+  100% { border-color: rgba(239, 68, 68, 0.6); box-shadow: 0 4px 20px rgba(239, 68, 68, 0.3); }
+}
+
+.alert-header {
+  font-size: 0.75rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+
+.alert-dot {
+  width: 6px;
+  height: 6px;
+  background-color: #ef4444;
+  border-radius: 50%;
+  display: inline-block;
+  animation: blinkRed 1s infinite alternate;
+}
+
+@keyframes blinkRed {
+  0% { opacity: 0.4; }
+  100% { opacity: 1; }
+}
+
+.alert-body {
+  font-size: 0.7rem;
+  line-height: 1.4;
+  color: #fca5a5;
+}
+
+/* 宠物情绪日记 */
+.screen-diary-card {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 14px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+}
+
+.diary-header {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #58d68d;
+  margin-bottom: 6px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  padding-bottom: 4px;
+}
+
+.diary-body {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.diary-text {
+  font-size: 0.75rem;
+  line-height: 1.5;
+  color: #cbd5e1;
+  margin: 0;
+  white-space: pre-wrap;
+  font-family: monospace;
+}
+
+/* 反馈微调胶囊 */
+.screen-feedback-loop {
+  margin-top: auto;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  padding-top: 8px;
+}
+
+.feedback-hint {
+  font-size: 0.65rem;
+  color: #64748b;
+  margin-bottom: 6px;
+  text-align: center;
+}
+
+.feedback-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.fb-btn {
+  flex: 1;
+  padding: 6px 4px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.05);
+  color: #e2e8f0;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.fb-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.fb-btn:active {
+  transform: scale(0.95);
+}
+
+.fb-btn.correct:hover {
+  border-color: rgba(56, 161, 105, 0.5);
+  color: #58d68d;
+}
+
+.fb-btn.incorrect:hover {
+  border-color: rgba(239, 68, 68, 0.5);
+  color: #fca5a5;
+}
+
+/* 手机震动抖动动画 */
+.vibrate-shake {
+  animation: phoneShake 0.4s cubic-bezier(.36,.07,.19,.97) both;
+}
+
+@keyframes phoneShake {
+  10%, 90% { transform: translate3d(-1px, 0, 0); }
+  20%, 80% { transform: translate3d(2px, 0, 0); }
+  30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+  40%, 60% { transform: translate3d(4px, 0, 0); }
+}
+
+/* ==========================================
+   创意火花投递箱 
+   ========================================== */
+.spark-idea-section {
+  max-width: 1000px;
+  margin: 4rem auto 2rem auto;
+  padding: 0 1.5rem;
+}
+
+.spark-idea-card {
+  background: linear-gradient(135deg, #090e17 0%, #03050a 100%);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 28px;
+  padding: 3rem;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
+}
+
+.spark-glow {
+  position: absolute;
+  top: -40px;
+  right: -40px;
+  width: 180px;
+  height: 180px;
+  background: radial-gradient(circle, rgba(56, 161, 105, 0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.spark-icon-wrapper {
+  width: 48px;
+  height: 48px;
+  background: rgba(56, 161, 105, 0.1);
+  border: 1px solid rgba(56, 161, 105, 0.3);
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #38a169;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 0 15px rgba(56, 161, 105, 0.1);
+}
+
+.spark-header h3 {
+  font-size: 1.7rem;
+  font-weight: 800;
+  color: #f8fafc;
+  margin-bottom: 0.8rem;
+  letter-spacing: -0.02em;
+}
+
+.spark-header p {
+  color: #64748b;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin-bottom: 2rem;
+  max-width: 700px;
+}
+
+.spark-body {
+  margin-bottom: 2rem;
+}
+
+.spark-textarea {
+  width: 100%;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 1.2rem;
+  color: #f8fafc;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  resize: vertical;
+  transition: all 0.3s ease;
+  font-family: inherit;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.6);
+}
+
+.spark-textarea:focus {
+  outline: none;
+  border-color: rgba(56, 161, 105, 0.5);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.6), 0 0 20px rgba(56, 161, 105, 0.15);
+}
+
+.spark-textarea::placeholder {
+  color: #475569;
+}
+
+.spark-footer {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.submit-spark-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #38a169;
+  color: #ffffff;
+  border: none;
+  border-radius: 14px;
+  padding: 12px 24px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 15px rgba(56, 161, 105, 0.3);
+}
+
+.submit-spark-btn:hover:not(:disabled) {
+  background: #2f855a;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(56, 161, 105, 0.5);
+}
+
+.submit-spark-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.submit-spark-btn:disabled {
+  background: rgba(255, 255, 255, 0.05);
+  color: #475569;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+@media (max-width: 992px) {
+  .sandbox-grid {
+    grid-template-columns: 1fr;
+  }
+  .phone-column {
+    justify-content: center;
+  }
+  .spark-idea-card {
+    padding: 1.5rem;
   }
 }
 </style>
