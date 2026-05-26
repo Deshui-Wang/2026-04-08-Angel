@@ -32,7 +32,8 @@ import {
   PieChart,
   ClipboardList,
   Layers,
-  Rocket
+  Rocket,
+  ChevronLeft
 } from 'lucide-vue-next'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import PurchaseAdvisor from './components/PurchaseAdvisor.vue'
@@ -457,6 +458,133 @@ const handleNavigate = (item) => {
     window.open(link, '_blank');
   }
 }
+
+// ==========================================
+// 创业梦工厂 - 数据体与交互控制
+// ==========================================
+
+const sparkIdeaText = ref('')
+
+const dreamIdeas = ref([
+  {
+    id: 1,
+    title: 'PoPyWaWa',
+    subtitle: '宠物情绪与行为意图多模态解码项圈纽扣',
+    statusText: '旗舰PoC验证中',
+    color: '#38a169',
+    icon: BrainCircuit,
+    isPopy: true,
+    isOpen: true, // 默认展开以展示旗舰控制台
+    activeScenario: 'fear',
+    shakeActive: false,
+    particles: [],
+    scenarios: {
+      fear: {
+        name: '雷雨惊恐 ⛈️',
+        audioFreq: '0.4s',
+        appTitle: '⚠️ 突发惊恐行为预警',
+        appDesc: '端侧 AI 监测到萌宠在雷雨中偏侧角抖动幅率剧增 (IMU 幅值 +320%)，心音骨传导重叠啸叫，判定处于惊恐惊吓状态，已为您自动激活舒缓助眠香氛与防走丢定位。',
+        diary: '【萌宠日记 📅 5月26日 雷雨】\n天空中突然发出轰隆隆的巨响，我害怕极了。项圈上的“纽扣”开始温热，我感到有些心安。主人别担心，虽然有大怪兽在叫，但我知道你会抱紧我。'
+      },
+      toilet: {
+        name: '蹲便上厕所 💩',
+        audioFreq: '1.2s',
+        appTitle: '🚽 异常排泄行为研判',
+        appDesc: '端侧 AI 连续 30s 捕捉到寰椎关节向下倾角 28° (IMU 蹲便姿态占比 > 95%)，并伴有规律呼吸声谱特征，判定正在进行排泄，实时监控暂无结石梗阻风险，身体指标良好。',
+        diary: '【萌宠日记 📅 5月26日 晴】\n今天肚子有点涨涨的。蹲在草丛里努力了一下，终于通畅啦！项圈静静地记录着我的每一次轻松，主人看到我的健康指数是 100 分，一定会很开心吧。'
+      },
+      excited: {
+        name: '极度兴奋 ⚡',
+        audioFreq: '0.6s',
+        appTitle: '🎉 极度欢愉状态提醒',
+        appDesc: '端侧 AI 监测到高频细微点头与快速奔跑惯性流 (IMU 流速 +180%)，音轨特征频段呈现极度兴奋叫声，判定其情绪指数为 98% 级极度亢奋欢愉。',
+        diary: '【萌宠日记 📅 5月26日 晴】\n主人拿起牵引绳的那一刻，我开心地要飞起来了！我用尽全力在客厅里转了三圈！项圈上的绿灯亮晶晶的，今天也是超级爱主人的一天！'
+      }
+    }
+  },
+  {
+    id: 2,
+    title: 'EduChain成果确权链',
+    subtitle: '基于区块链的高校科研与创意成果确权平台',
+    statusText: '概念设计中',
+    color: '#3b82f6',
+    icon: ShieldCheck,
+    isPopy: false,
+    isOpen: false,
+    painpoint: '高校师生海量科研灵感与早期作品，因缺乏简易确权机制，极易在论文发表或转化前被抄袭泄露。',
+    solution: '集成轻量级以太坊侧链，一键为创意火花生成数字签名与时间戳，在链上锁定知识产权。',
+    business: '预计年收益￥1.5M，对标国内版权局版权存证，收费模式为单次存证￥10元起。',
+    tech: 'ERC-721/1155 确权协议、私有分布式节点群、智能合约自动化审核机制。'
+  },
+  {
+    id: 3,
+    title: 'VRLabAI仿真实验室',
+    subtitle: '基于 AIGC 与大模型的生成式虚拟实验教学系统',
+    statusText: '架构设计中',
+    color: '#8b5cf6',
+    icon: Workflow,
+    isPopy: false,
+    isOpen: false,
+    painpoint: '传统虚拟实训开发周期长（>6个月），无法根据教学内容灵活调整，且软硬件要求高。',
+    solution: '学生输入实验需求，AIGC 在 3秒内动态生成 2.5D 三维虚拟实训场景，配备 AI 导师实时语音评分纠错。',
+    business: 'ToB 年营收 ￥4.5M，采用按年订阅制，首批试点高校达 12 家。',
+    tech: 'Three.js 引擎、WebXR 渲染架构、多模态端侧 LLM 流程监控引擎。'
+  },
+  {
+    id: 4,
+    title: 'UniMeet AI产学研中枢',
+    subtitle: '打通校企信息壁垒的成果转化与精准撮合大脑',
+    statusText: '数据录入中',
+    color: '#f59e0b',
+    icon: Share2,
+    isPopy: false,
+    isOpen: false,
+    painpoint: '高校科研成果“锁在抽屉里”，而企业面临卡脖子技术找不到对口专家，信息存在严重错配。',
+    solution: '以百亿参数级垂直领域大模型，对全网专利及高校教师的学术画像进行深度关联，提供分钟级供需自动撮合。',
+    business: '撮合成功抽取 5% 佣金，会员制服务费 ￥50k/年。',
+    tech: '多模态知识图谱、图神经网络 (GNN)、向量数据库毫秒级匹配检索。'
+  }
+])
+
+const switchScenario = (idea, key) => {
+  idea.activeScenario = key
+  idea.shakeActive = true
+  setTimeout(() => {
+    idea.shakeActive = false
+  }, 500)
+}
+
+const triggerFineTuning = (idea) => {
+  idea.particles = []
+  for (let i = 0; i < 15; i++) {
+    idea.particles.push({
+      id: i,
+      x: (Math.random() - 0.5) * 160,
+      y: -50 - Math.random() * 120,
+      delay: Math.random() * 0.3
+    })
+  }
+  
+  ElMessage.success('小样本端侧数据反馈成功，神经网络梯度增量微调已完成！')
+  
+  setTimeout(() => {
+    idea.particles = []
+  }, 2000)
+}
+
+const submitSparkIdea = () => {
+  if (!sparkIdeaText.value.trim()) return
+  
+  ElMessageBox.alert(
+    `我们已收到您宝贵的创意想法：“${sparkIdeaText.value}”。梦工厂孵化专家将在 24 小时内对该想法进行商业可行性评估，并为您提供专属分析报告！`,
+    '✨ 创意火花投递成功',
+    {
+      confirmButtonText: '收到',
+      type: 'success'
+    }
+  )
+  sparkIdeaText.value = ''
+}
 </script>
 
 <template>
@@ -494,6 +622,13 @@ const handleNavigate = (item) => {
           @click="currentView = 'gude'"
         >
           顾得工具
+        </button>
+        <button 
+          class="nav-link" 
+          :class="{ active: currentView === 'dreamFactory' }"
+          @click="currentView = 'dreamFactory'"
+        >
+          创业梦工厂
         </button>
       </div>
       <div class="nav-links">
