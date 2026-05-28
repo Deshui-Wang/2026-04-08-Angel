@@ -6,6 +6,7 @@ import { ElMessage } from 'element-plus'
 // 导入自治子组件
 import PortalView from './components/PortalView.vue'
 import StrategyView from './components/StrategyView.vue'
+import MarketView from './components/market/MarketView.vue'
 import GudeView from './components/GudeView.vue'
 import DreamFactoryView from './components/DreamFactoryView.vue'
 import PurchaseAdvisor from './components/PurchaseAdvisor.vue'
@@ -13,7 +14,7 @@ import PurchaseAdvisor from './components/PurchaseAdvisor.vue'
 // 导入静态常量数据
 import { productsData } from './data/constants'
 
-const currentView = ref('portal') // 'portal', 'strategy', 'advisor', 'gude', 'dreamFactory', 'dreamLab'
+const currentView = ref('portal') // 'portal', 'strategy', 'market', 'advisor', 'gude', 'dreamFactory', 'dreamLab'
 
 // Custom Password Modal State
 const showPasswordModal = ref(false)
@@ -96,6 +97,13 @@ if (urlView === "dreamLab" && matchedIdeaId) {
         </button>
         <button 
           class="nav-link" 
+          :class="{ active: currentView === 'market' }"
+          @click="currentView = 'market'"
+        >
+          市场分析
+        </button>
+        <button 
+          class="nav-link" 
           :class="{ active: currentView === 'advisor' }"
           @click="currentView = 'advisor'"
         >
@@ -129,6 +137,10 @@ if (urlView === "dreamLab" && matchedIdeaId) {
     
     <StrategyView 
       v-else-if="currentView === 'strategy'" 
+    />
+    
+    <MarketView 
+      v-else-if="currentView === 'market'" 
     />
     
     <main v-else-if="currentView === 'advisor'">
