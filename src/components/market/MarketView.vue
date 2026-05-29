@@ -1,14 +1,16 @@
 <script setup>
 import { ref } from 'vue'
-import { School, Building2, Users, BarChart3 } from 'lucide-vue-next'
+import { School, Building2, Users, BarChart3, LayoutDashboard, TrendingUp } from 'lucide-vue-next'
 
 // 导入子组件
+import DashboardTab from './DashboardTab.vue'
 import SchoolTab from './SchoolTab.vue'
 import EnterpriseTab from './EnterpriseTab.vue'
 import UserTab from './UserTab.vue'
+import DashboardCompetitor from './DashboardCompetitor.vue'
 
-// 默认激活的子页签：schools, enterprises, users
-const activeMarketTab = ref('schools')
+// 默认激活的子页签：dashboard, schools, enterprises, users, competitor
+const activeMarketTab = ref('dashboard')
 
 // 联动过滤状态：仅显示暂无销售员
 const onlyNoSales = ref(false)
@@ -26,6 +28,15 @@ const onlyNoSales = ref(false)
         </div>
         
         <nav class="market-nav">
+          <button 
+            class="market-tab-btn"
+            :class="{ active: activeMarketTab === 'dashboard' }"
+            @click="activeMarketTab = 'dashboard'"
+          >
+            <LayoutDashboard :size="18" />
+            分析看板
+          </button>
+
           <button 
             class="market-tab-btn"
             :class="{ active: activeMarketTab === 'schools' }"
@@ -52,12 +63,34 @@ const onlyNoSales = ref(false)
             <Users :size="18" />
             C端用户画像
           </button>
+
+          <button 
+            class="market-tab-btn"
+            :class="{ active: activeMarketTab === 'competitor' }"
+            @click="activeMarketTab = 'competitor'"
+          >
+            <TrendingUp :size="18" />
+            竞品分析
+          </button>
         </nav>
       </aside>
 
       <!-- Right Content Panels -->
       <section class="market-content">
         
+        <!-- Tab 0: 分析看板 -->
+        <div v-if="activeMarketTab === 'dashboard'" class="tab-pane">
+          <div class="pane-header-container">
+            <div class="pane-header">
+              <h2 class="pane-title">智慧教育市场分析看板</h2>
+              <p class="pane-subtitle">深度透视全国院校体量与各大校企 AI 工具核心业务需求分布版图</p>
+            </div>
+          </div>
+          
+          <!-- Dashboard Component -->
+          <DashboardTab />
+        </div>
+
         <!-- Tab 1: 目标院校 -->
         <div v-if="activeMarketTab === 'schools'" class="tab-pane">
           <div class="pane-header-container">
@@ -109,6 +142,19 @@ const onlyNoSales = ref(false)
           
           <!-- User Component -->
           <UserTab />
+        </div>
+
+        <!-- Tab 4: 竞品分析 -->
+        <div v-if="activeMarketTab === 'competitor'" class="tab-pane">
+          <div class="pane-header-container">
+            <div class="pane-header">
+              <h2 class="pane-title">市场引力轨道与竞品博弈分析</h2>
+              <p class="pane-subtitle">以行星轨道的创新交互透视各大厂商份额，深度对比其优势软肋与价格策略</p>
+            </div>
+          </div>
+          
+          <!-- Competitor Component -->
+          <DashboardCompetitor />
         </div>
 
       </section>
@@ -267,7 +313,7 @@ const onlyNoSales = ref(false)
 .no-sales-filter.checked {
   background: var(--text-primary, #111);
   color: #ffffff;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
 }
 
 .no-sales-filter input[type="checkbox"] {
