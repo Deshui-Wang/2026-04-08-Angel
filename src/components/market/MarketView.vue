@@ -61,7 +61,7 @@ const onlyNoSales = ref(false)
             @click="activeMarketTab = 'users'"
           >
             <Users :size="18" />
-            C端用户画像
+            C端用户
           </button>
 
           <button 
