@@ -109,15 +109,7 @@ export const productsData = {
       stats: '全场景创意引擎',
       color: '#3b82f6',
     },
-    {
-      id: 501,
-      title: 'HappyLife AI',
-      description: '多维度情感计算与生活智能辅助，为您打造更有温度的 AI 生活伴侣。',
-      icon: HeartPlus,
-      link: 'https://happylife.deshui27.cn/',
-      stats: '情感智能驱动',
-      color: '#f43f5e',
-    },
+
     {
       id: 502,
       title: 'DS多媒体工厂',
